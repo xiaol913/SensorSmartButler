@@ -33,7 +33,7 @@ public class ExcelHelper {
     /**
      * 表格数据和SQLite中的要对应
      */
-    public static String createExcel(ArrayList<SensorData> dataList) throws Exception {
+    public static String createExcel(String title,ArrayList<SensorData> dataList) throws Exception {
         ArrayList<SensorData> accelerometerList = new ArrayList<>();//加速度传感器
         ArrayList<SensorData> gyroscopeList = new ArrayList<>();//陀螺仪传感器
         ArrayList<SensorData> magneticList = new ArrayList<>();//磁场传感器
@@ -86,7 +86,7 @@ public class ExcelHelper {
             }
         }
         // 保存文档
-        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp";
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp/"+ title;
         new File(dirPath).mkdirs();
         File file = new File(dirPath, "sensor_test.xls");
         FileOutputStream fos;
@@ -100,9 +100,15 @@ public class ExcelHelper {
     }
 
     public static void deleteExcel() {
-        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp";
-        File file = new File(dirPath, "sensor_test.xls");
-        file.delete();
+        String dirPath1 = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp/OnFeet";
+        String dirPath2 = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp/Still";
+        String dirPath3 = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp/InVehicle";
+        File file1 = new File(dirPath1, "sensor_test.xls");
+        File file2 = new File(dirPath2, "sensor_test.xls");
+        File file3 = new File(dirPath3, "sensor_test.xls");
+        file1.delete();
+        file2.delete();
+        file3.delete();
     }
 
 

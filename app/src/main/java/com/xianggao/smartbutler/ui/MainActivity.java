@@ -168,7 +168,21 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         magnetic.unregisterListener();
     }
 
-    public void exportExcel(View view) {
+    //On feet
+    public void asOnFeet(View view){
+        exportExcel(view,"OnFeet");
+    }
+
+    //Still
+    public void asStill(View view){
+        exportExcel(view,"Still");
+    }
+
+    //In Vehicle
+    public void asInVehicle(View view){
+        exportExcel(view,"InVehicle");
+    }
+    public void exportExcel(View view, final String title) {
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Exporting to Excel");
         new Thread() {
             @Override
@@ -191,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
                 String result;
                 String path;
                 try {
-                    path = ExcelHelper.createExcel(dataList);
+                    path = ExcelHelper.createExcel(title,dataList);
                     result = "导出到Excel成功！";
                 } catch (Exception e) {
                     path = "";
