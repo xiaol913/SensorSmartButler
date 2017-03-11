@@ -32,7 +32,7 @@ public class ModelHelper {
     private static Evaluator createEvaluator(Context context) throws Exception {
         AssetManager assetManager = null;
         assetManager = context.getAssets();
-        InputStream is = assetManager.open("RidgeClassifier.ser");
+        InputStream is = assetManager.open("SGDClassifier.ser");
         return EvaluatorUtil.createEvaluator(is);
     }
 
@@ -40,9 +40,14 @@ public class ModelHelper {
     public static String predictAction(Context context, double x, double y, double z) throws Exception {
         Evaluator evaluator = createEvaluator(context);
         Map<String, Double> data = new HashMap<>();
+        x = Math.abs(x);
+        y = Math.abs(y);
+        z = Math.abs(z);
+        double v = Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2);
         data.put("AccelerometerX", x);
         data.put("AccelerometerY", y);
         data.put("AccelerometerZ", z);
+        data.put("Accelerometer_value",v);
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
         List<InputField> inputFields = evaluator.getInputFields();
         for (InputField inputField : inputFields) {
@@ -55,6 +60,8 @@ public class ModelHelper {
                 str = data.get("AccelerometerY");
             } else if (inputFieldName.toString().equals("AccelerometerZ")) {
                 str = data.get("AccelerometerZ");
+            }else if (inputFieldName.toString().equals("Accelerometer_value")){
+                str =data.get("Accelerometer_value");
             }
             inputFieldValue = inputField.prepare(str);
             arguments.put(inputFieldName, inputFieldValue);

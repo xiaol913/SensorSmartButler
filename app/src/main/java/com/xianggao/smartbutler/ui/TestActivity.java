@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.xianggao.smartbutler.R;
 import com.xianggao.smartbutler.entity.SensorData;
 //import com.xianggao.smartbutler.utils.ExcelHelper;
-import com.xianggao.smartbutler.utils.ExcelHelper;
 import com.xianggao.smartbutler.utils.RepeatHelper;
 import com.xianggao.smartbutler.utils.SQLHelper;
 import com.xianggao.smartbutler.utils.ScreenListener;
@@ -169,94 +168,94 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
 //        gravity.unregisterListener();
     }
 
-    public void asOnFeet(View view) {
-        exportExcel(view, "OnFeet");
-    }
-
-//    Still
-    public void asStill(View view) {
-        exportExcel(view, "Still");
-    }
-
-    //In Vehicle
-    public void asInVehicle(View view) {
-        exportExcel(view, "InVehicle");
-    }
-
-    //导出文件
-    public void exportExcel(View view, final String title) {
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Exporting to Excel");
-        new Thread() {
-            @Override
-            public void run() {
-                SQLHelper dbHelper = SQLHelper.getInstance(getBaseContext());
-                SQLiteDatabase database = dbHelper.getReadableDatabase();
-                Cursor cursor = database.rawQuery("SELECT * FROM sensor_test", null);
-                cursor.moveToFirst();
-                ArrayList<SensorData> dataList = new ArrayList<>();
-                while (cursor.moveToNext()) {
-                    SensorData data = new SensorData();
-                    data.setType(cursor.getInt(cursor.getColumnIndex("type")));
-                    data.setX(cursor.getFloat(cursor.getColumnIndex("x")));
-                    data.setY(cursor.getFloat(cursor.getColumnIndex("y")));
-                    data.setZ(cursor.getFloat(cursor.getColumnIndex("z")));
-                    data.setTimeline(cursor.getLong(cursor.getColumnIndex("timeline")));
-                    dataList.add(data);
-                }
-                cursor.close();
-                String result;
-                String path = null;
-                try {
-                    path = ExcelHelper.createExcel(title, dataList);
-                    result = "导出到Excel成功！";
-                } catch (Exception e) {
-                    path = "";
-                    e.printStackTrace();
-                    result = "导出失败：" + e.getMessage();
-                }
-                final String finalResult = result;
-                final String finalPath = path;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.dismiss();
-                        Toast.makeText(getApplicationContext(), finalResult, Toast.LENGTH_SHORT).show();
-                        //发送到手机QQ
-                        if (!TextUtils.isEmpty(finalPath)) {
-                            String packageName = "com.tencent.mobileqq";
-                            try {
-                                Intent intent = new Intent(Intent.ACTION_SEND);
-                                intent.setPackage(packageName);
-                                intent.setType("*/*");
-                                intent.putExtra(Intent.EXTRA_STREAM, finalPath);
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-            }
-        }.start();
-    }
-
-    public void deleteData(View view) {
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Deleting……");
-        new Thread() {
-            @Override
-            public void run() {
-                SQLHelper sqlHelper = SQLHelper.getInstance(getBaseContext());
-                SQLiteDatabase database = sqlHelper.getWritableDatabase();
-                database.execSQL("DELETE FROM sensor_test");//删除数据库中的数据
-                ExcelHelper.deleteExcel();//删除Excel文件
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.dismiss();
-                        Toast.makeText(getApplicationContext(), "Data Empty", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }.start();
-    }
+//    public void asOnFeet(View view) {
+//        exportExcel(view, "OnFeet");
+//    }
+//
+////    Still
+//    public void asStill(View view) {
+//        exportExcel(view, "Still");
+//    }
+//
+//    //In Vehicle
+//    public void asInVehicle(View view) {
+//        exportExcel(view, "InVehicle");
+//    }
+//
+//    //导出文件
+//    public void exportExcel(View view, final String title) {
+//        final ProgressDialog dialog = ProgressDialog.show(this, null, "Exporting to Excel");
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                SQLHelper dbHelper = SQLHelper.getInstance(getBaseContext());
+//                SQLiteDatabase database = dbHelper.getReadableDatabase();
+//                Cursor cursor = database.rawQuery("SELECT * FROM sensor_test", null);
+//                cursor.moveToFirst();
+//                ArrayList<SensorData> dataList = new ArrayList<>();
+//                while (cursor.moveToNext()) {
+//                    SensorData data = new SensorData();
+//                    data.setType(cursor.getInt(cursor.getColumnIndex("type")));
+//                    data.setX(cursor.getFloat(cursor.getColumnIndex("x")));
+//                    data.setY(cursor.getFloat(cursor.getColumnIndex("y")));
+//                    data.setZ(cursor.getFloat(cursor.getColumnIndex("z")));
+//                    data.setTimeline(cursor.getLong(cursor.getColumnIndex("timeline")));
+//                    dataList.add(data);
+//                }
+//                cursor.close();
+//                String result;
+//                String path = null;
+//                try {
+//                    path = ExcelHelper.createExcel(title, dataList);
+//                    result = "导出到Excel成功！";
+//                } catch (Exception e) {
+//                    path = "";
+//                    e.printStackTrace();
+//                    result = "导出失败：" + e.getMessage();
+//                }
+//                final String finalResult = result;
+//                final String finalPath = path;
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        dialog.dismiss();
+//                        Toast.makeText(getApplicationContext(), finalResult, Toast.LENGTH_SHORT).show();
+//                        //发送到手机QQ
+//                        if (!TextUtils.isEmpty(finalPath)) {
+//                            String packageName = "com.tencent.mobileqq";
+//                            try {
+//                                Intent intent = new Intent(Intent.ACTION_SEND);
+//                                intent.setPackage(packageName);
+//                                intent.setType("*/*");
+//                                intent.putExtra(Intent.EXTRA_STREAM, finalPath);
+//                                startActivity(intent);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//        }.start();
+//    }
+//
+//    public void deleteData(View view) {
+//        final ProgressDialog dialog = ProgressDialog.show(this, null, "Deleting……");
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                SQLHelper sqlHelper = SQLHelper.getInstance(getBaseContext());
+//                SQLiteDatabase database = sqlHelper.getWritableDatabase();
+//                database.execSQL("DELETE FROM sensor_test");//删除数据库中的数据
+//                ExcelHelper.deleteExcel();//删除Excel文件
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        dialog.dismiss();
+//                        Toast.makeText(getApplicationContext(), "Data Empty", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        }.start();
+//    }
 }
