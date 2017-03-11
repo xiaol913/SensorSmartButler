@@ -66,25 +66,25 @@ public class ExcelHelper {
             }
         }
         //陀螺仪
-        HSSFSheet gyroscopeSheet = workbook.createSheet("Gyroscope");
-        int gyroscopeSize = gyroscopeList.size();
-        if (gyroscopeSize > 0) {
-            for (short i = 0; i < gyroscopeSize; i++) {
-                SensorData gyroscopeData = gyroscopeList.get(i);
-                Object[] values = {gyroscopeData.getType(), gyroscopeData.getX(), gyroscopeData.getY(), gyroscopeData.getZ(), gyroscopeData.getTimeline()};
-                insertRow(gyroscopeSheet, i, values, cellStyle);
-            }
-        }
-        //磁力
-        HSSFSheet magneticSheet = workbook.createSheet("Magnetic");
-        int magneticSize = magneticList.size();
-        if (magneticSize > 0) {
-            for (short i = 0; i < magneticSize; i++) {
-                SensorData magneticData = magneticList.get(i);
-                Object[] values = {magneticData.getType(), magneticData.getX(), magneticData.getY(), magneticData.getZ(), magneticData.getTimeline()};
-                insertRow(magneticSheet, i, values, cellStyle);
-            }
-        }
+//        HSSFSheet gyroscopeSheet = workbook.createSheet("Gyroscope");
+//        int gyroscopeSize = gyroscopeList.size();
+//        if (gyroscopeSize > 0) {
+//            for (short i = 0; i < gyroscopeSize; i++) {
+//                SensorData gyroscopeData = gyroscopeList.get(i);
+//                Object[] values = {gyroscopeData.getType(), gyroscopeData.getX(), gyroscopeData.getY(), gyroscopeData.getZ(), gyroscopeData.getTimeline()};
+//                insertRow(gyroscopeSheet, i, values, cellStyle);
+//            }
+//        }
+//        //磁力
+//        HSSFSheet magneticSheet = workbook.createSheet("Magnetic");
+//        int magneticSize = magneticList.size();
+//        if (magneticSize > 0) {
+//            for (short i = 0; i < magneticSize; i++) {
+//                SensorData magneticData = magneticList.get(i);
+//                Object[] values = {magneticData.getType(), magneticData.getX(), magneticData.getY(), magneticData.getZ(), magneticData.getTimeline()};
+//                insertRow(magneticSheet, i, values, cellStyle);
+//            }
+//        }
         // 保存文档
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp/"+ title;
         new File(dirPath).mkdirs();

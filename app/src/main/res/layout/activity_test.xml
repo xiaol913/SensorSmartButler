@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/darker_gray"
                 android:gravity="center"
-                android:text="Magnetic"
+                android:text="Gravity"
                 android:textColor="#0066CC"
                 android:textSize="20sp" />
 
@@ -113,7 +113,7 @@
                 android:layout_margin="10dp">
 
                 <TextView
-                    android:id="@+id/main_txtMagneticX"
+                    android:id="@+id/main_txtGravityX"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="X:"
@@ -121,19 +121,19 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/main_txtMagneticY"
+                    android:id="@+id/main_txtGravityY"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/main_txtMagneticX"
+                    android:layout_below="@id/main_txtGravityX"
                     android:text="Y:"
                     android:textColor="#0066CC"
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/main_txtMagneticZ"
+                    android:id="@+id/main_txtGravityZ"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/main_txtMagneticY"
+                    android:layout_below="@id/main_txtGravityY"
                     android:text="Z:"
                     android:textColor="#0066CC"
                     android:textSize="20sp" />

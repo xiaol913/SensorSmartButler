@@ -34,10 +34,9 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     private SensorHelper accelerometer;
     private SensorHelper gyroscope;
     private SensorHelper gravity;
-    private SensorHelper magnetic;
     private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ;
-    private TextView main_txtGyroscopeX, main_txtGyroscopeY, main_txtGyroscopeZ;
-    private TextView main_txtMagneticX, main_txtMagneticY, main_txtMagneticZ;
+//    private TextView main_txtGyroscopeX, main_txtGyroscopeY, main_txtGyroscopeZ;
+//    private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
     private ExecutorService executorService;
 
     @Override
@@ -56,16 +55,16 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         screenListener.start(this);
         accelerometer = new SensorHelper(this, Sensor.TYPE_ACCELEROMETER);
         gyroscope = new SensorHelper(this, Sensor.TYPE_GYROSCOPE);
-        magnetic = new SensorHelper(this, Sensor.TYPE_MAGNETIC_FIELD);
+        gravity = new SensorHelper(this, Sensor.TYPE_MAGNETIC_FIELD);
         main_txtAccelerometerX = (TextView) findViewById(R.id.main_txtAccelerometerX);
         main_txtAccelerometerY = (TextView) findViewById(R.id.main_txtAccelerometerY);
         main_txtAccelerometerZ = (TextView) findViewById(R.id.main_txtAccelerometerZ);
-        main_txtGyroscopeX = (TextView) findViewById(R.id.main_txtGyroscopeX);
-        main_txtGyroscopeY = (TextView) findViewById(R.id.main_txtGyroscopeY);
-        main_txtGyroscopeZ = (TextView) findViewById(R.id.main_txtGyroscopeZ);
-        main_txtMagneticX = (TextView) findViewById(R.id.main_txtMagneticX);
-        main_txtMagneticY = (TextView) findViewById(R.id.main_txtMagneticY);
-        main_txtMagneticZ = (TextView) findViewById(R.id.main_txtMagneticZ);
+//        main_txtGyroscopeX = (TextView) findViewById(R.id.main_txtGyroscopeX);
+//        main_txtGyroscopeY = (TextView) findViewById(R.id.main_txtGyroscopeY);
+//        main_txtGyroscopeZ = (TextView) findViewById(R.id.main_txtGyroscopeZ);
+//        main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
+//        main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
+//        main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
         executorService = Executors.newCachedThreadPool();
     }
 
@@ -97,10 +96,10 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         //参考：http://bbs.csdn.net/topics/390410025
         accelerometer.unregisterListener();
         accelerometer.registerListener(this);
-        gyroscope.unregisterListener();
-        gyroscope.registerListener(this);
-        magnetic.unregisterListener();
-        magnetic.registerListener(this);
+//        gyroscope.unregisterListener();
+//        gyroscope.registerListener(this);
+//        gravity.unregisterListener();
+//        gravity.registerListener(this);
     }
 
     @Override
@@ -123,14 +122,14 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
             main_txtAccelerometerX.setText("X:" + x);
             main_txtAccelerometerY.setText("Y:" + y);
             main_txtAccelerometerZ.setText("Z:" + z);
-        } else if (sensorType == Sensor.TYPE_GYROSCOPE) {
-            main_txtGyroscopeX.setText("X:" + x);
-            main_txtGyroscopeY.setText("Y:" + y);
-            main_txtGyroscopeZ.setText("Z:" + z);
-        } else if (sensorType == Sensor.TYPE_MAGNETIC_FIELD) {
-            main_txtMagneticX.setText("X:" + x);
-            main_txtMagneticY.setText("Y:" + y);
-            main_txtMagneticZ.setText("Z:" + z);
+//        } else if (sensorType == Sensor.TYPE_GYROSCOPE) {
+//            main_txtGyroscopeX.setText("X:" + x);
+//            main_txtGyroscopeY.setText("Y:" + y);
+//            main_txtGyroscopeZ.setText("Z:" + z);
+//        } else if (sensorType == Sensor.TYPE_GRAVITY) {
+//            main_txtGravityX.setText("X:" + x);
+//            main_txtGravityY.setText("Y:" + y);
+//            main_txtGravityZ.setText("Z:" + z);
         }
     }
 
@@ -159,15 +158,15 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     public void startCollectData(View v) {
         //开始监听传感器
         accelerometer.registerListener(this);
-        gyroscope.registerListener(this);
-        magnetic.registerListener(this);
+//        gyroscope.registerListener(this);
+//        gravity.registerListener(this);
     }
 
     public void stopCollectData(View view) {
         //取消传感器监听
         accelerometer.unregisterListener();
-        gyroscope.unregisterListener();
-        magnetic.unregisterListener();
+//        gyroscope.unregisterListener();
+//        gravity.unregisterListener();
     }
 
     public void asOnFeet(View view) {
@@ -208,7 +207,7 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
                 String result;
                 String path = null;
                 try {
-//                    path = ExcelHelper.createExcel(title, dataList);
+                    path = ExcelHelper.createExcel(title, dataList);
                     result = "导出到Excel成功！";
                 } catch (Exception e) {
                     path = "";
