@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Accelerometer"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:id="@+id/main_txtAccelerometerX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="X:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_txtAccelerometerY"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_txtAccelerometerX"
+                    android:text="Y:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_txtAccelerometerZ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_txtAccelerometerY"
+                    android:text="Z:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Gyroscope"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:id="@+id/main_txtGyroscopeX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="X:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_txtGyroscopeY"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_txtGyroscopeX"
+                    android:text="Y:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_txtGyroscopeZ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_txtGyroscopeY"
+                    android:text="Z:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Magnetic"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:id="@+id/main_txtMagneticX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="X:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_txtMagneticY"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_txtMagneticX"
+                    android:text="Y:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_txtMagneticZ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_txtMagneticY"
+                    android:text="Z:"
+                    android:textColor="#0066CC"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/btn_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="startCollectData"
+                android:text="Start"
+                android:textColor="#0066CC"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btn_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="stopCollectData"
+                android:text="Stop"
+                android:textColor="#0066CC"
+                android:textSize="18sp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="asOnFeet"
+                android:text="Export As On Feet"
+                android:textColor="#0066CC"
+                android:textSize="18sp" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="asStill"
+                android:text="Export As Still"
+                android:textColor="#0066CC"
+                android:textSize="18sp" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="asInVehicle"
+                android:text="Export As In Vehicle"
+                android:textColor="#0066CC"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btn_clear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="deleteData"
+                android:text="Delete All Data"
+                android:textColor="#0066CC"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</RelativeLayout>
