@@ -11,7 +11,7 @@ import android.view.WindowManager;
  * 文件名：  WakeHelper
  * 创建者：  Shawn Gao
  * 创建时间：2017/2/5 - 2:51
- * 描述：    保持CPU一直运行或屏幕长亮。需要权限：android.permission.WAKE_LOCK
+ * 描述：    Keep the CPU running or the screen is on
  */
 
 public class WakeHelper {
@@ -22,7 +22,7 @@ public class WakeHelper {
 
     public WakeHelper(Context mContext, Type type) {
         this.type = type;
-        //获得电源管理服务
+        //Get power management services
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
     }
 

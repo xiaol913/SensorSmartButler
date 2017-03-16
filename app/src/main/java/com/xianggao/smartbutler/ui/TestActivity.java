@@ -2,11 +2,11 @@ package com.xianggao.smartbutler.ui;
 
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,14 +14,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xianggao.smartbutler.R;
-import com.xianggao.smartbutler.entity.SensorData;
-//import com.xianggao.smartbutler.utils.ExcelHelper;
+import com.xianggao.smartbutler.entity.SQLData;
+import com.xianggao.smartbutler.utils.CSVHelper;
 import com.xianggao.smartbutler.utils.RepeatHelper;
 import com.xianggao.smartbutler.utils.SQLHelper;
 import com.xianggao.smartbutler.utils.ScreenListener;
 import com.xianggao.smartbutler.utils.SensorHelper;
 import com.xianggao.smartbutler.utils.WakeHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,8 +36,8 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     private SensorHelper gyroscope;
     private SensorHelper gravity;
     private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ;
-//    private TextView main_txtGyroscopeX, main_txtGyroscopeY, main_txtGyroscopeZ;
-//    private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
+    private TextView main_txtGyroscopeX, main_txtGyroscopeY, main_txtGyroscopeZ;
+    private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
     private ExecutorService executorService;
 
     @Override
@@ -46,7 +48,7 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         initView();
     }
 
-    //初始化
+    //initial
     private void initView() {
         mWakeHelper = new WakeHelper(this, WakeHelper.Type.KEEP_CPU_RUN);
         mWakeHelper.acquire();
@@ -54,16 +56,16 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         screenListener.start(this);
         accelerometer = new SensorHelper(this, Sensor.TYPE_ACCELEROMETER);
         gyroscope = new SensorHelper(this, Sensor.TYPE_GYROSCOPE);
-        gravity = new SensorHelper(this, Sensor.TYPE_MAGNETIC_FIELD);
+        gravity = new SensorHelper(this, Sensor.TYPE_GRAVITY);
         main_txtAccelerometerX = (TextView) findViewById(R.id.main_txtAccelerometerX);
         main_txtAccelerometerY = (TextView) findViewById(R.id.main_txtAccelerometerY);
         main_txtAccelerometerZ = (TextView) findViewById(R.id.main_txtAccelerometerZ);
-//        main_txtGyroscopeX = (TextView) findViewById(R.id.main_txtGyroscopeX);
-//        main_txtGyroscopeY = (TextView) findViewById(R.id.main_txtGyroscopeY);
-//        main_txtGyroscopeZ = (TextView) findViewById(R.id.main_txtGyroscopeZ);
-//        main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
-//        main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
-//        main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
+        main_txtGyroscopeX = (TextView) findViewById(R.id.main_txtGyroscopeX);
+        main_txtGyroscopeY = (TextView) findViewById(R.id.main_txtGyroscopeY);
+        main_txtGyroscopeZ = (TextView) findViewById(R.id.main_txtGyroscopeZ);
+        main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
+        main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
+        main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
         executorService = Executors.newCachedThreadPool();
     }
 
@@ -76,7 +78,7 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     @Override
     public void onBackPressed() {
         if (RepeatHelper.isFastDoubleAction(2000L)) {
-            // 几毫秒之内连续按两次
+            // twice BACK in 2s to exit
             finish();
             System.exit(0);
         } else {
@@ -91,14 +93,14 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
 
     @Override
     public void onScreenOff() {
-        //在手机锁屏的时候，重新注册传感器可解决部分手机无法黑屏后收集数据的问题，
-        //参考：http://bbs.csdn.net/topics/390410025
+        //Registering listener again can fix some phones stop recording data when they screen off
+        //http://bbs.csdn.net/topics/390410025
         accelerometer.unregisterListener();
         accelerometer.registerListener(this);
-//        gyroscope.unregisterListener();
-//        gyroscope.registerListener(this);
-//        gravity.unregisterListener();
-//        gravity.registerListener(this);
+        gyroscope.unregisterListener();
+        gyroscope.registerListener(this);
+        gravity.unregisterListener();
+        gravity.registerListener(this);
     }
 
     @Override
@@ -110,7 +112,48 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     public void onSensorChanged(Sensor sensor, float[] values) {
         int sensorType = sensor.getType();
         showDataInView(sensorType, values);
-        saveData(sensorType, values);
+        float[] newValues = new float[9];
+        long maxTimeMillis = 200L;
+        if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
+            return;//after 200ms
+        }
+        if (TextUtils.isEmpty(main_txtAccelerometerX.getText().toString()))
+            newValues[0] = 0;
+        else
+            newValues[0] = Float.parseFloat(main_txtAccelerometerX.getText().toString());
+        if (TextUtils.isEmpty(main_txtAccelerometerY.getText().toString()))
+            newValues[1] = 0;
+        else
+            newValues[1] = Float.parseFloat(main_txtAccelerometerY.getText().toString());
+        if (TextUtils.isEmpty(main_txtAccelerometerZ.getText().toString()))
+            newValues[2] = 0;
+        else
+            newValues[2] = Float.parseFloat(main_txtAccelerometerZ.getText().toString());
+        if (TextUtils.isEmpty(main_txtGyroscopeX.getText().toString()))
+            newValues[3] = 0;
+        else
+            newValues[3] = Float.parseFloat(main_txtGyroscopeX.getText().toString());
+        if (TextUtils.isEmpty(main_txtGyroscopeY.getText().toString()))
+            newValues[4] = 0;
+        else
+            newValues[4] = Float.parseFloat(main_txtGyroscopeY.getText().toString());
+        if (TextUtils.isEmpty(main_txtGyroscopeZ.getText().toString()))
+            newValues[5] = 0;
+        else
+            newValues[5] = Float.parseFloat(main_txtGyroscopeZ.getText().toString());
+        if (TextUtils.isEmpty(main_txtGravityX.getText().toString()))
+            newValues[6] = 0;
+        else
+            newValues[6] = Float.parseFloat(main_txtGravityX.getText().toString());
+        if (TextUtils.isEmpty(main_txtGravityY.getText().toString()))
+            newValues[7] = 0;
+        else
+            newValues[7] = Float.parseFloat(main_txtGravityY.getText().toString());
+        if (TextUtils.isEmpty(main_txtGravityZ.getText().toString()))
+            newValues[8] = 0;
+        else
+            newValues[8] = Float.parseFloat(main_txtGravityZ.getText().toString());
+        saveData(newValues);
     }
 
     private void showDataInView(int sensorType, float[] values) {
@@ -118,144 +161,143 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         float y = values[1];
         float z = values[2];
         if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-            main_txtAccelerometerX.setText("X:" + x);
-            main_txtAccelerometerY.setText("Y:" + y);
-            main_txtAccelerometerZ.setText("Z:" + z);
-//        } else if (sensorType == Sensor.TYPE_GYROSCOPE) {
-//            main_txtGyroscopeX.setText("X:" + x);
-//            main_txtGyroscopeY.setText("Y:" + y);
-//            main_txtGyroscopeZ.setText("Z:" + z);
-//        } else if (sensorType == Sensor.TYPE_GRAVITY) {
-//            main_txtGravityX.setText("X:" + x);
-//            main_txtGravityY.setText("Y:" + y);
-//            main_txtGravityZ.setText("Z:" + z);
+            main_txtAccelerometerX.setText("" + x);
+            main_txtAccelerometerY.setText("" + y);
+            main_txtAccelerometerZ.setText("" + z);
+        } else if (sensorType == Sensor.TYPE_GYROSCOPE) {
+            main_txtGyroscopeX.setText("" + x);
+            main_txtGyroscopeY.setText("" + y);
+            main_txtGyroscopeZ.setText("" + z);
+        } else if (sensorType == Sensor.TYPE_GRAVITY) {
+            main_txtGravityX.setText("" + x);
+            main_txtGravityY.setText("" + y);
+            main_txtGravityZ.setText("" + z);
         }
     }
 
-    private void saveData(final int sensorType, float[] values) {
+    private void saveData(float[] values) {
         final float x = values[0];
         final float y = values[1];
         final float z = values[2];
+        final float q = values[3];
+        final float w = values[4];
+        final float e = values[5];
+        final float a = values[6];
+        final float s = values[7];
+        final float d = values[8];
         final long timeline = System.currentTimeMillis();
         Thread thread = new Thread() {
             //通过线程池及时间频繁度来减少OOM的发生
             @Override
             public void run() {
-                long maxTimeMillis = 300L;
-                if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-                    return;//几毫秒后再保存
-                }
                 SQLHelper sqlHelper = SQLHelper.getInstance(getBaseContext());
                 SQLiteDatabase database = sqlHelper.getWritableDatabase();
-                database.execSQL("INSERT INTO sensor_test (type,x,y,z,timeline) VALUES (?,?,?,?,?)",
-                        new Object[]{sensorType, x, y, z, timeline});
+                database.execSQL("INSERT INTO sensor_data (x,y,z,q,w,e,a,s,d,timeline) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                        new Object[]{x, y, z, q, w, e, a, s, d, timeline});
             }
         };
         executorService.submit(thread);
     }
 
     public void startCollectData(View v) {
-        //开始监听传感器
         accelerometer.registerListener(this);
-//        gyroscope.registerListener(this);
-//        gravity.registerListener(this);
+        gyroscope.registerListener(this);
+        gravity.registerListener(this);
     }
 
     public void stopCollectData(View view) {
-        //取消传感器监听
         accelerometer.unregisterListener();
-//        gyroscope.unregisterListener();
-//        gravity.unregisterListener();
+        gyroscope.unregisterListener();
+        gravity.unregisterListener();
     }
 
-//    public void asOnFeet(View view) {
-//        exportExcel(view, "OnFeet");
-//    }
-//
-////    Still
-//    public void asStill(View view) {
-//        exportExcel(view, "Still");
-//    }
-//
-//    //In Vehicle
-//    public void asInVehicle(View view) {
-//        exportExcel(view, "InVehicle");
-//    }
-//
-//    //导出文件
-//    public void exportExcel(View view, final String title) {
-//        final ProgressDialog dialog = ProgressDialog.show(this, null, "Exporting to Excel");
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                SQLHelper dbHelper = SQLHelper.getInstance(getBaseContext());
-//                SQLiteDatabase database = dbHelper.getReadableDatabase();
-//                Cursor cursor = database.rawQuery("SELECT * FROM sensor_test", null);
-//                cursor.moveToFirst();
-//                ArrayList<SensorData> dataList = new ArrayList<>();
-//                while (cursor.moveToNext()) {
-//                    SensorData data = new SensorData();
-//                    data.setType(cursor.getInt(cursor.getColumnIndex("type")));
-//                    data.setX(cursor.getFloat(cursor.getColumnIndex("x")));
-//                    data.setY(cursor.getFloat(cursor.getColumnIndex("y")));
-//                    data.setZ(cursor.getFloat(cursor.getColumnIndex("z")));
-//                    data.setTimeline(cursor.getLong(cursor.getColumnIndex("timeline")));
-//                    dataList.add(data);
-//                }
-//                cursor.close();
-//                String result;
-//                String path = null;
-//                try {
-//                    path = ExcelHelper.createExcel(title, dataList);
-//                    result = "导出到Excel成功！";
-//                } catch (Exception e) {
-//                    path = "";
-//                    e.printStackTrace();
-//                    result = "导出失败：" + e.getMessage();
-//                }
-//                final String finalResult = result;
-//                final String finalPath = path;
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        dialog.dismiss();
-//                        Toast.makeText(getApplicationContext(), finalResult, Toast.LENGTH_SHORT).show();
-//                        //发送到手机QQ
-//                        if (!TextUtils.isEmpty(finalPath)) {
-//                            String packageName = "com.tencent.mobileqq";
-//                            try {
-//                                Intent intent = new Intent(Intent.ACTION_SEND);
-//                                intent.setPackage(packageName);
-//                                intent.setType("*/*");
-//                                intent.putExtra(Intent.EXTRA_STREAM, finalPath);
-//                                startActivity(intent);
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//        }.start();
-//    }
-//
-//    public void deleteData(View view) {
-//        final ProgressDialog dialog = ProgressDialog.show(this, null, "Deleting……");
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                SQLHelper sqlHelper = SQLHelper.getInstance(getBaseContext());
-//                SQLiteDatabase database = sqlHelper.getWritableDatabase();
-//                database.execSQL("DELETE FROM sensor_test");//删除数据库中的数据
-//                ExcelHelper.deleteExcel();//删除Excel文件
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        dialog.dismiss();
-//                        Toast.makeText(getApplicationContext(), "Data Empty", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//        }.start();
-//    }
+    //On Feet
+    public void asOnFeet(View view) {
+        exportCSV(0);
+    }
+
+    //Still
+    public void asStill(View view) {
+        exportCSV(1);
+    }
+
+    //In Vehicle
+    public void asInVehicle(View view) {
+        exportCSV(2);
+    }
+
+    public void exportCSV(final int action) {
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Exporting to CSV");
+        new Thread() {
+            @Override
+            public void run() {
+                SQLHelper helper = SQLHelper.getInstance(getBaseContext());
+                SQLiteDatabase database = helper.getReadableDatabase();
+                Cursor cursor = database.rawQuery("SELECT * FROM sensor_data", null);
+                cursor.moveToFirst();
+                ArrayList<SQLData> dataList = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    SQLData sqlData = new SQLData();
+                    sqlData.setX(cursor.getFloat(cursor.getColumnIndex("x")));
+                    sqlData.setY(cursor.getFloat(cursor.getColumnIndex("y")));
+                    sqlData.setZ(cursor.getFloat(cursor.getColumnIndex("z")));
+                    sqlData.setQ(cursor.getFloat(cursor.getColumnIndex("q")));
+                    sqlData.setW(cursor.getFloat(cursor.getColumnIndex("w")));
+                    sqlData.setE(cursor.getFloat(cursor.getColumnIndex("e")));
+                    sqlData.setA(cursor.getFloat(cursor.getColumnIndex("a")));
+                    sqlData.setS(cursor.getFloat(cursor.getColumnIndex("s")));
+                    sqlData.setD(cursor.getFloat(cursor.getColumnIndex("d")));
+                    sqlData.setTimeline(cursor.getLong(cursor.getColumnIndex("timeline")));
+                    dataList.add(sqlData);
+                }
+                cursor.close();
+                String result;
+                try {
+                    String str = CSVHelper.createCSV(action, dataList);
+                    switch (str) {
+                        case "100":
+                            result = "Export Success!";
+                            database.execSQL("DELETE FROM sensor_data");//clear all data
+                            break;
+                        default:
+                            result = "Export Fail: " + str;
+                            break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    result = "Export Fail: " + e.getMessage();
+                }
+                final String theFinal = result;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), theFinal, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }.start();
+    }
+
+    public void deleteData(View view) {
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Deleting......");
+        new Thread() {
+            @Override
+            public void run() {
+                String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SensorData/";
+                File file = new File(dirPath);
+                SQLHelper helper = SQLHelper.getInstance(getBaseContext());
+                SQLiteDatabase database = helper.getReadableDatabase();
+                database.execSQL("DELETE FROM sensor_data");//clear all data
+                CSVHelper.deleteCSV(file);//delete all CSV files
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Data Empty", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }.start();
+    }
 }

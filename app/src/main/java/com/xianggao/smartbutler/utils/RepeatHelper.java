@@ -6,11 +6,11 @@ package com.xianggao.smartbutler.utils;
  * 文件名：  RepeatHelper
  * 创建者：  Shawn Gao
  * 创建时间：2017/2/5 - 3:23
- * 描述：    判断是否重复的动作，防止短时间大量重复或者也可是说是无效的操作
+ * 描述：    In order to prevent short time, repeated action occurs
  */
 
 public class RepeatHelper {
-    private static final long DEFAULT_TIME_MILLIS = 800;//毫秒
+    private static final long DEFAULT_TIME_MILLIS = 800L;//ms
     private static long lastTimeMillis = 0L;
 
     public static boolean isFastDoubleAction(long maxTimeMillis) {
@@ -25,7 +25,6 @@ public class RepeatHelper {
     }
 
     public static boolean isFastDoubleAction() {
-        //间隔时间视具体项目中需求情况而定
         return isFastDoubleAction(DEFAULT_TIME_MILLIS);
     }
 }

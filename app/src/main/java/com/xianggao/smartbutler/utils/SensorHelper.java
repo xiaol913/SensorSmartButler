@@ -13,7 +13,7 @@ import android.hardware.SensorManager;
  * 文件名：  SensorHelper
  * 创建者：  Shawn Gao
  * 创建时间：2017/2/5 - 3:08
- * 描述：    传感器工具类
+ * 描述：    Sensor tools class
  */
 
 public class SensorHelper implements SensorEventListener {
@@ -26,7 +26,7 @@ public class SensorHelper implements SensorEventListener {
         this.sensorType = sensorType;
     }
 
-    //注册传感器
+    //register sensor
     public void registerListener(onSensorChangeListener listener) {
         sensorChangeListener = listener;
         sensorManager.registerListener(this,
@@ -34,7 +34,7 @@ public class SensorHelper implements SensorEventListener {
                 SensorManager.SENSOR_DELAY_UI);
     }
 
-    //注销传感器
+    //unregister sensor
     public void unregisterListener() {
         sensorManager.unregisterListener(this);
     }
@@ -52,7 +52,7 @@ public class SensorHelper implements SensorEventListener {
 
     }
 
-    //监听事件接口
+    //Listener interface
     public interface onSensorChangeListener {
         void onSensorChanged(Sensor sensor, float[] values);
     }

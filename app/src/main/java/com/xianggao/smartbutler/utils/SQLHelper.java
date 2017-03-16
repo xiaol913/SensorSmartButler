@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * 文件名：  SQLHelper
  * 创建者：  Shawn Gao
  * 创建时间：2017/2/5 - 3:40
- * 描述：    数据库工具类
+ * 描述：    SQL database tools class
  */
 
 public class SQLHelper extends SQLiteOpenHelper {
@@ -31,12 +31,17 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sql) {
-        String create_sql = "CREATE TABLE IF NOT EXISTS sensor_test ("
+        String create_sql = "CREATE TABLE IF NOT EXISTS sensor_data ("
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "type INTEGER NOT NULL,"
                 + "x FLOAT NOT NULL,"
                 + "y FLOAT NOT NULL,"
                 + "z FLOAT NOT NULL,"
+                + "q FLOAT NOT NULL,"
+                + "w FLOAT NOT NULL,"
+                + "e FLOAT NOT NULL,"
+                + "a FLOAT NOT NULL,"
+                + "s FLOAT NOT NULL,"
+                + "d FLOAT NOT NULL,"
                 + "timeline INTEGER NOT NULL)";
 
         sql.execSQL(create_sql);

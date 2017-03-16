@@ -13,7 +13,8 @@ import android.os.PowerManager;
  * 文件名：  ScreenListener
  * 创建者：  Shawn Gao
  * 创建时间：2017/2/5 - 3:01
- * 描述：    屏幕状态监听。参见：http://blog.csdn.net/mengweiqi33/article/details/18094221
+ * 描述：    Screen status monitor
+ * http://blog.csdn.net/mengweiqi33/article/details/18094221
  */
 
 public class ScreenListener {
@@ -27,7 +28,7 @@ public class ScreenListener {
     }
 
     /**
-     * 开始监听屏幕状态
+     * monitor screen
      *
      * @param listener
      */
@@ -42,7 +43,7 @@ public class ScreenListener {
     }
 
     /**
-     * 初始化屏幕状态
+     * initial screen status
      */
     private void initScreenState() {
         if (mScreenStateListener == null) {
@@ -58,14 +59,14 @@ public class ScreenListener {
     }
 
     /**
-     * 停止screen状态监听
+     * stop monitoring
      */
     public void stop() {
         mContext.unregisterReceiver(mScreenReceiver);
     }
 
     /**
-     * 屏幕状态广播接收者
+     * Recipient
      */
     private class ScreenBroadcastReceiver extends BroadcastReceiver {
         private String action = null;
@@ -73,11 +74,11 @@ public class ScreenListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
-            if (Intent.ACTION_SCREEN_ON.equals(action)) { // 开屏
+            if (Intent.ACTION_SCREEN_ON.equals(action)) { // on
                 mScreenStateListener.onScreenOn();
-            } else if (Intent.ACTION_SCREEN_OFF.equals(action)) { // 锁屏
+            } else if (Intent.ACTION_SCREEN_OFF.equals(action)) { // off
                 mScreenStateListener.onScreenOff();
-            } else if (Intent.ACTION_USER_PRESENT.equals(action)) { // 解锁
+            } else if (Intent.ACTION_USER_PRESENT.equals(action)) { // unlock
                 mScreenStateListener.onUserPresent();
             }
         }
@@ -85,22 +86,22 @@ public class ScreenListener {
     }
 
     /**
-     * 回调接口
+     * call back interface
      */
     public interface ScreenStateListener {
 
         /**
-         * 屏幕已点亮
+         * screen on
          */
         void onScreenOn();
 
         /**
-         * 屏幕已熄灭
+         * screen off
          */
         void onScreenOff();
 
         /**
-         * 屏幕已解锁
+         * screen unlock
          */
         void onUserPresent();
 
