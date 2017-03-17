@@ -113,9 +113,9 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         int sensorType = sensor.getType();
         showDataInView(sensorType, values);
         float[] newValues = new float[9];
-        long maxTimeMillis = 200L;
+        long maxTimeMillis = 20L;
         if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-            return;//after 200ms
+            return;//after 20ms
         }
         if (TextUtils.isEmpty(main_txtAccelerometerX.getText().toString()))
             newValues[0] = 0;
