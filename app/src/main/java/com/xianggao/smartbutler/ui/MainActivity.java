@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
     private WakeHelper mWakeHelper;
     private ExecutorService executorService;
+    private ModelHelper modelHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
         main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
         executorService = Executors.newCachedThreadPool();
+        modelHelper = new ModelHelper(this);
     }
 
     @Override
@@ -171,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
 
     private void showAction(double[] values) {
         String action = null;
-        ModelHelper modelHelper = new ModelHelper(getApplicationContext());
         action = modelHelper.predictAction(values);
         switch (action) {
             case "2":
