@@ -39,9 +39,6 @@ public class SQLHelper extends SQLiteOpenHelper {
                 + "q FLOAT NOT NULL,"
                 + "w FLOAT NOT NULL,"
                 + "e FLOAT NOT NULL,"
-                + "a FLOAT NOT NULL,"
-                + "s FLOAT NOT NULL,"
-                + "d FLOAT NOT NULL,"
                 + "timeline INTEGER NOT NULL)";
 
         sql.execSQL(create_sql);

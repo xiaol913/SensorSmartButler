@@ -48,6 +48,22 @@ public class ModelHelper {
         return data;
     }
 
+    private static Map<String, Double> linearData(Map<String, Double> data, double[] list, String type) {
+        double a = Math.abs(list[0] - list[3]);
+        double b = Math.abs(list[1] - list[4]);
+        double c = Math.abs(list[2] - list[5]);
+        double v = Math.pow(a, 2) + Math.pow(b, 2) + Math.pow(c, 2);
+        String strX = type + "X";
+        String strY = type + "Y";
+        String strZ = type + "Z";
+        String strV = type + "_value";
+        data.put(strX, a);
+        data.put(strY, b);
+        data.put(strZ, c);
+        data.put(strV, v);
+        return data;
+    }
+
     public ModelHelper(Context context){
         AssetManager assetManager = context.getAssets();
         InputStream is = null;
@@ -63,8 +79,8 @@ public class ModelHelper {
     public String predictAction(double[] list){
         Map<String, Double> data = new HashMap<>();
         analysisData(data, list[0], list[1], list[2], "Accelerometer");
-        analysisData(data, list[3], list[4], list[5], "Gyroscope");
-        analysisData(data, list[6], list[7], list[8], "Gravity");
+        analysisData(data, list[3], list[4], list[5], "Gravity");
+        linearData(data, list, "Linear");
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
         List<InputField> inputFields = this.evaluator.getInputFields();
         for (InputField inputField : inputFields) {
@@ -79,14 +95,6 @@ public class ModelHelper {
                 str = data.get("AccelerometerZ");
             } else if (inputFieldName.toString().equals("Accelerometer_value")) {
                 str = data.get("Accelerometer_value");
-            } else if (inputFieldName.toString().equals("GyroscopeX")) {
-                str = data.get("GyroscopeX");
-            } else if (inputFieldName.toString().equals("GyroscopeY")) {
-                str = data.get("GyroscopeY");
-            } else if (inputFieldName.toString().equals("GyroscopeZ")) {
-                str = data.get("GyroscopeZ");
-            } else if (inputFieldName.toString().equals("Gyroscope_value")) {
-                str = data.get("Gyroscope_value");
             } else if (inputFieldName.toString().equals("GravityX")) {
                 str = data.get("GravityX");
             } else if (inputFieldName.toString().equals("GravityY")) {
@@ -95,6 +103,14 @@ public class ModelHelper {
                 str = data.get("GravityZ");
             } else if (inputFieldName.toString().equals("Gravity_value")) {
                 str = data.get("Gravity_value");
+            } else if (inputFieldName.toString().equals("LinearX")) {
+                str = data.get("LinearX");
+            } else if (inputFieldName.toString().equals("LinearY")) {
+                str = data.get("LinearY");
+            } else if (inputFieldName.toString().equals("LinearZ")) {
+                str = data.get("LinearZ");
+            } else if (inputFieldName.toString().equals("Linear_value")) {
+                str = data.get("Linear_value");
             }
             inputFieldValue = inputField.prepare(str);
             arguments.put(inputFieldName, inputFieldValue);

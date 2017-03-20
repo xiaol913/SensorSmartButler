@@ -25,10 +25,8 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
 
     private ScreenListener screenListener;
     private SensorHelper accelerometer;
-    private SensorHelper gyroscope;
     private SensorHelper gravity;
     private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ, main_txtAction;
-    private TextView main_txtGyroscopeX, main_txtGyroscopeY, main_txtGyroscopeZ;
     private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
     private WakeHelper mWakeHelper;
     private ExecutorService executorService;
@@ -49,15 +47,11 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         screenListener = new ScreenListener(this);
         screenListener.start(this);
         accelerometer = new SensorHelper(this, Sensor.TYPE_ACCELEROMETER);
-        gyroscope = new SensorHelper(this, Sensor.TYPE_GYROSCOPE);
         gravity = new SensorHelper(this, Sensor.TYPE_GRAVITY);
         main_txtAccelerometerX = (TextView) findViewById(R.id.main_txtAccelerometerX);
         main_txtAccelerometerY = (TextView) findViewById(R.id.main_txtAccelerometerY);
         main_txtAccelerometerZ = (TextView) findViewById(R.id.main_txtAccelerometerZ);
         main_txtAction = (TextView) findViewById(R.id.main_txtAction);
-        main_txtGyroscopeX = (TextView) findViewById(R.id.main_txtGyroscopeX);
-        main_txtGyroscopeY = (TextView) findViewById(R.id.main_txtGyroscopeY);
-        main_txtGyroscopeZ = (TextView) findViewById(R.id.main_txtGyroscopeZ);
         main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
         main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
         main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
@@ -93,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         //http://bbs.csdn.net/topics/390410025
         accelerometer.unregisterListener();
         accelerometer.registerListener(this);
-        gyroscope.unregisterListener();
-        gyroscope.registerListener(this);
         gravity.unregisterListener();
         gravity.registerListener(this);
     }
@@ -108,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     public void onSensorChanged(Sensor sensor, float[] values) {
         int sensorType = sensor.getType();
         showDataInView(sensorType, values);
-        double[] newValues = new double[9];
+        double[] newValues = new double[6];
         long maxTimeMillis = 2000L;
         if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
             return;//after 2000ms
@@ -125,30 +117,18 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
             newValues[2] = 0;
         else
             newValues[2] = Float.parseFloat(main_txtAccelerometerZ.getText().toString());
-        if (TextUtils.isEmpty(main_txtGyroscopeX.getText().toString()))
+        if (TextUtils.isEmpty(main_txtGravityX.getText().toString()))
             newValues[3] = 0;
         else
-            newValues[3] = Float.parseFloat(main_txtGyroscopeX.getText().toString());
-        if (TextUtils.isEmpty(main_txtGyroscopeY.getText().toString()))
+            newValues[3] = Float.parseFloat(main_txtGravityX.getText().toString());
+        if (TextUtils.isEmpty(main_txtGravityY.getText().toString()))
             newValues[4] = 0;
         else
-            newValues[4] = Float.parseFloat(main_txtGyroscopeY.getText().toString());
-        if (TextUtils.isEmpty(main_txtGyroscopeZ.getText().toString()))
+            newValues[4] = Float.parseFloat(main_txtGravityY.getText().toString());
+        if (TextUtils.isEmpty(main_txtGravityZ.getText().toString()))
             newValues[5] = 0;
         else
-            newValues[5] = Float.parseFloat(main_txtGyroscopeZ.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityX.getText().toString()))
-            newValues[6] = 0;
-        else
-            newValues[6] = Float.parseFloat(main_txtGravityX.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityY.getText().toString()))
-            newValues[7] = 0;
-        else
-            newValues[7] = Float.parseFloat(main_txtGravityY.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityZ.getText().toString()))
-            newValues[8] = 0;
-        else
-            newValues[8] = Float.parseFloat(main_txtGravityZ.getText().toString());
+            newValues[5] = Float.parseFloat(main_txtGravityZ.getText().toString());
         showAction(newValues);
     }
 
@@ -160,10 +140,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
             main_txtAccelerometerX.setText("" + x);
             main_txtAccelerometerY.setText("" + y);
             main_txtAccelerometerZ.setText("" + z);
-        } else if (sensorType == Sensor.TYPE_GYROSCOPE) {
-            main_txtGyroscopeX.setText("" + x);
-            main_txtGyroscopeY.setText("" + y);
-            main_txtGyroscopeZ.setText("" + z);
         } else if (sensorType == Sensor.TYPE_GRAVITY) {
             main_txtGravityX.setText("" + x);
             main_txtGravityY.setText("" + y);
@@ -200,13 +176,11 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
 
     public void startCollectData(View v) {
         accelerometer.registerListener(this);
-        gyroscope.registerListener(this);
         gravity.registerListener(this);
     }
 
     public void stopCollectData(View view) {
         accelerometer.unregisterListener();
-        gyroscope.unregisterListener();
         gravity.unregisterListener();
     }
 

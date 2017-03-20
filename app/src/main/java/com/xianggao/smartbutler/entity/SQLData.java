@@ -16,9 +16,6 @@ public class SQLData {
     private float q;
     private float w;
     private float e;
-    private float a;
-    private float s;
-    private float d;
     private long timeline;
 
     public float getX() {
@@ -67,30 +64,6 @@ public class SQLData {
 
     public void setE(float e) {
         this.e = e;
-    }
-
-    public float getA() {
-        return a;
-    }
-
-    public void setA(float a) {
-        this.a = a;
-    }
-
-    public float getS() {
-        return s;
-    }
-
-    public void setS(float s) {
-        this.s = s;
-    }
-
-    public float getD() {
-        return d;
-    }
-
-    public void setD(float d) {
-        this.d = d;
     }
 
     public long getTimeline() {

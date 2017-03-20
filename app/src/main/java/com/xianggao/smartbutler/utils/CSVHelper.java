@@ -55,9 +55,6 @@ public class CSVHelper {
                 list.add(sqlData.getQ());
                 list.add(sqlData.getW());
                 list.add(sqlData.getE());
-                list.add(sqlData.getA());
-                list.add(sqlData.getS());
-                list.add(sqlData.getD());
                 list.add(sqlData.getTimeline());
                 list.add(action);
                 for (int j = 0; j < list.size(); j++) {
