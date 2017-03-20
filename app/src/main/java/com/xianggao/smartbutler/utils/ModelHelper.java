@@ -11,6 +11,7 @@ import org.jpmml.evaluator.FieldValue;
 import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.TargetField;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,12 +30,7 @@ import java.util.Map;
 
 public class ModelHelper {
 
-    private static Evaluator createEvaluator(Context context) throws Exception {
-        AssetManager assetManager;
-        assetManager = context.getAssets();
-        InputStream is = assetManager.open("MLPClassifier.ser");
-        return EvaluatorUtil.createEvaluator(is);
-    }
+    private Evaluator evaluator;
 
     private static Map<String, Double> analysisData(Map<String, Double> data, double x, double y, double z, String type) {
         double a = Math.abs(x);
@@ -52,14 +48,25 @@ public class ModelHelper {
         return data;
     }
 
-    public static String predictAction(Context context, double[] list) throws Exception {
-        Evaluator evaluator = createEvaluator(context);
+    public ModelHelper(Context context){
+        AssetManager assetManager = context.getAssets();
+        InputStream is = null;
+        try {
+            is = assetManager.open("MLPClassifier.ser");
+            this.evaluator = EvaluatorUtil.createEvaluator(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public String predictAction(double[] list){
         Map<String, Double> data = new HashMap<>();
         analysisData(data, list[0], list[1], list[2], "Accelerometer");
         analysisData(data, list[3], list[4], list[5], "Gyroscope");
         analysisData(data, list[6], list[7], list[8], "Gravity");
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
-        List<InputField> inputFields = evaluator.getInputFields();
+        List<InputField> inputFields = this.evaluator.getInputFields();
         for (InputField inputField : inputFields) {
             FieldName inputFieldName = inputField.getName();
             FieldValue inputFieldValue;

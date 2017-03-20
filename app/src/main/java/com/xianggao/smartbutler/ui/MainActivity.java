@@ -171,11 +171,8 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
 
     private void showAction(double[] values) {
         String action = null;
-        try {
-            action = ModelHelper.predictAction(getBaseContext(), values);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
+        ModelHelper modelHelper = new ModelHelper(getApplicationContext());
+        action = modelHelper.predictAction(values);
         switch (action) {
             case "2":
                 action = "InVehicle";
