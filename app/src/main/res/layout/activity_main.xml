@@ -14,7 +14,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:orientation="vertical">
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -23,48 +22,223 @@
                 android:text="Accelerometer"
                 android:textColor="#0066CC"
                 android:textSize="20sp" />
-
-            <RelativeLayout
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp">
-
-                <TextView
-                    android:id="@+id/main_txtAccelerometerX"
+                <LinearLayout
                     android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtAccelerometerX"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Y:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtAccelerometerY"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Z:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtAccelerometerZ"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Gyroscope"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtGyroscopeX"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Y:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtGyroscopeY"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Z:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtGyroscopeZ"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Gravity"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtGravityX"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Y:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtGravityY"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Z:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtGravityZ"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Activity"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="X:"
+                    android:text="Activiy:"
                     android:textColor="#0066CC"
                     android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/main_txtAccelerometerY"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/main_txtAccelerometerX"
-                    android:text="Y:"
-                    android:textColor="#0066CC"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/main_txtAccelerometerZ"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/main_txtAccelerometerY"
-                    android:text="Z:"
-                    android:textColor="#0066CC"
-                    android:textSize="20sp" />
-
                 <TextView
                     android:id="@+id/main_txtAction"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/main_txtAccelerometerZ"
-                    android:text="Action:"
                     android:textColor="#0066CC"
                     android:textSize="20sp" />
-            </RelativeLayout>
-
+            </LinearLayout>
             <Button
                 android:id="@+id/btn_start"
                 android:layout_width="match_parent"
@@ -87,7 +261,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="RecordData"
-                android:text="Record Data"
+                android:text="To Record Data"
                 android:textColor="#0066CC"
                 android:textSize="18sp" />
 

@@ -32,22 +32,32 @@ public class ModelHelper {
     private static Evaluator createEvaluator(Context context) throws Exception {
         AssetManager assetManager;
         assetManager = context.getAssets();
-        InputStream is = assetManager.open("SGDClassifier.ser");
+        InputStream is = assetManager.open("MLPClassifier.ser");
         return EvaluatorUtil.createEvaluator(is);
     }
 
+    private static Map<String, Double> analysisData(Map<String, Double> data, double x, double y, double z, String type) {
+        double a = Math.abs(x);
+        double b = Math.abs(y);
+        double c = Math.abs(z);
+        double v = Math.pow(a, 2) + Math.pow(b, 2) + Math.pow(c, 2);
+        String strX = type + "X";
+        String strY = type + "Y";
+        String strZ = type + "Z";
+        String strV = type + "_value";
+        data.put(strX, a);
+        data.put(strY, b);
+        data.put(strZ, c);
+        data.put(strV, v);
+        return data;
+    }
 
-    public static String predictAction(Context context, double x, double y, double z) throws Exception {
+    public static String predictAction(Context context, double[] list) throws Exception {
         Evaluator evaluator = createEvaluator(context);
         Map<String, Double> data = new HashMap<>();
-        x = Math.abs(x);
-        y = Math.abs(y);
-        z = Math.abs(z);
-        double v = Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2);
-        data.put("AccelerometerX", x);
-        data.put("AccelerometerY", y);
-        data.put("AccelerometerZ", z);
-        data.put("Accelerometer_value", v);
+        analysisData(data, list[0], list[1], list[2], "Accelerometer");
+        analysisData(data, list[3], list[4], list[5], "Gyroscope");
+        analysisData(data, list[6], list[7], list[8], "Gravity");
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
         List<InputField> inputFields = evaluator.getInputFields();
         for (InputField inputField : inputFields) {
@@ -62,6 +72,22 @@ public class ModelHelper {
                 str = data.get("AccelerometerZ");
             } else if (inputFieldName.toString().equals("Accelerometer_value")) {
                 str = data.get("Accelerometer_value");
+            } else if (inputFieldName.toString().equals("GyroscopeX")) {
+                str = data.get("GyroscopeX");
+            } else if (inputFieldName.toString().equals("GyroscopeY")) {
+                str = data.get("GyroscopeY");
+            } else if (inputFieldName.toString().equals("GyroscopeZ")) {
+                str = data.get("GyroscopeZ");
+            } else if (inputFieldName.toString().equals("Gyroscope_value")) {
+                str = data.get("Gyroscope_value");
+            } else if (inputFieldName.toString().equals("GravityX")) {
+                str = data.get("GravityX");
+            } else if (inputFieldName.toString().equals("GravityY")) {
+                str = data.get("GravityY");
+            } else if (inputFieldName.toString().equals("GravityZ")) {
+                str = data.get("GravityZ");
+            } else if (inputFieldName.toString().equals("Gravity_value")) {
+                str = data.get("Gravity_value");
             }
             inputFieldValue = inputField.prepare(str);
             arguments.put(inputFieldName, inputFieldValue);
