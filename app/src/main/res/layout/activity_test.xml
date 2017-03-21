@@ -146,7 +146,72 @@
                         android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center"
+                android:text="Linear Accelerometer"
+                android:textColor="#0066CC"
+                android:textSize="20sp" />
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtLinearX"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Y:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtLinearY"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Z:"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/main_txtLinearZ"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0066CC"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
             <Button
                 android:id="@+id/btn_start"
                 android:layout_width="match_parent"
@@ -187,14 +252,14 @@
                 android:textColor="#0066CC"
                 android:textSize="18sp" />
 
-            <Button
-                android:id="@+id/btn_clear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="deleteData"
-                android:text="Delete All Data"
-                android:textColor="#0066CC"
-                android:textSize="18sp" />
+            <!--<Button-->
+                <!--android:id="@+id/btn_clear"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:onClick="deleteData"-->
+                <!--android:text="Delete All Data"-->
+                <!--android:textColor="#0066CC"-->
+                <!--android:textSize="18sp" />-->
 
         </LinearLayout>
 

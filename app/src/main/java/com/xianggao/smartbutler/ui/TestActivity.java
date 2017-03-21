@@ -36,7 +36,9 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     private SensorHelper gravity;
     private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ;
     private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
+    private TextView main_txtLinearX, main_txtLinearY, main_txtLinearZ;
     private ExecutorService executorService;
+    private double[] newValues = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,9 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
         main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
         main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
         main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
+        main_txtLinearX = (TextView) findViewById(R.id.main_txtLinearX);
+        main_txtLinearY = (TextView) findViewById(R.id.main_txtLinearY);
+        main_txtLinearZ = (TextView) findViewById(R.id.main_txtLinearZ);
         executorService = Executors.newCachedThreadPool();
     }
 
@@ -103,70 +108,54 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
     @Override
     public void onSensorChanged(Sensor sensor, float[] values) {
         int sensorType = sensor.getType();
-        showDataInView(sensorType, values);
-        float[] newValues = new float[6];
-        long maxTimeMillis = 20L;
-        if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-            return;//after 20ms
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            newValues[0] = values[0];
+            newValues[1] = values[1];
+            newValues[2] = values[2];
         }
-        if (TextUtils.isEmpty(main_txtAccelerometerX.getText().toString()))
-            newValues[0] = 0;
-        else
-            newValues[0] = Float.parseFloat(main_txtAccelerometerX.getText().toString());
-        if (TextUtils.isEmpty(main_txtAccelerometerY.getText().toString()))
-            newValues[1] = 0;
-        else
-            newValues[1] = Float.parseFloat(main_txtAccelerometerY.getText().toString());
-        if (TextUtils.isEmpty(main_txtAccelerometerZ.getText().toString()))
-            newValues[2] = 0;
-        else
-            newValues[2] = Float.parseFloat(main_txtAccelerometerZ.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityX.getText().toString()))
-            newValues[3] = 0;
-        else
-            newValues[3] = Float.parseFloat(main_txtGravityX.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityY.getText().toString()))
-            newValues[4] = 0;
-        else
-            newValues[4] = Float.parseFloat(main_txtGravityY.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityZ.getText().toString()))
-            newValues[5] = 0;
-        else
-            newValues[5] = Float.parseFloat(main_txtGravityZ.getText().toString());
+        if (sensorType == Sensor.TYPE_GRAVITY) {
+            newValues[3] = values[0];
+            newValues[4] = values[1];
+            newValues[5] = values[2];
+        }
+        long maxTimeMillis = 50L;
+        if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
+            return;//after 50ms
+        }
+        showDataInView(newValues);
         saveData(newValues);
     }
 
-    private void showDataInView(int sensorType, float[] values) {
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-            main_txtAccelerometerX.setText("" + x);
-            main_txtAccelerometerY.setText("" + y);
-            main_txtAccelerometerZ.setText("" + z);
-        } else if (sensorType == Sensor.TYPE_GRAVITY) {
-            main_txtGravityX.setText("" + x);
-            main_txtGravityY.setText("" + y);
-            main_txtGravityZ.setText("" + z);
-        }
+    private void showDataInView(double[] values) {
+        double a = values[0] - values[3];
+        double b = values[1] - values[4];
+        double c = values[2] - values[5];
+        main_txtAccelerometerX.setText("" + values[0]);
+        main_txtAccelerometerY.setText("" + values[1]);
+        main_txtAccelerometerZ.setText("" + values[2]);
+        main_txtGravityX.setText("" + values[3]);
+        main_txtGravityY.setText("" + values[4]);
+        main_txtGravityZ.setText("" + values[5]);
+        main_txtLinearX.setText("" + a);
+        main_txtLinearY.setText("" + b);
+        main_txtLinearZ.setText("" + c);
     }
 
-    private void saveData(float[] values) {
-        final float x = values[0];
-        final float y = values[1];
-        final float z = values[2];
-        final float q = values[3];
-        final float w = values[4];
-        final float e = values[5];
-        final long timeline = System.currentTimeMillis();
+    private void saveData(double[] values) {
+        final double x = values[0];
+        final double y = values[1];
+        final double z = values[2];
+        final double q = values[3];
+        final double w = values[4];
+        final double e = values[5];
         Thread thread = new Thread() {
             //通过线程池及时间频繁度来减少OOM的发生
             @Override
             public void run() {
                 SQLHelper sqlHelper = SQLHelper.getInstance(getBaseContext());
                 SQLiteDatabase database = sqlHelper.getWritableDatabase();
-                database.execSQL("INSERT INTO sensor_data (x,y,z,q,w,e,timeline) VALUES (?,?,?,?,?,?,?)",
-                        new Object[]{x, y, z, q, w, e, timeline});
+                database.execSQL("INSERT INTO sensor_data (x,y,z,q,w,e) VALUES (?,?,?,?,?,?)",
+                        new Object[]{x, y, z, q, w, e});
             }
         };
         executorService.submit(thread);
@@ -209,13 +198,12 @@ public class TestActivity extends AppCompatActivity implements ScreenListener.Sc
                 ArrayList<SQLData> dataList = new ArrayList<>();
                 while (cursor.moveToNext()) {
                     SQLData sqlData = new SQLData();
-                    sqlData.setX(cursor.getFloat(cursor.getColumnIndex("x")));
-                    sqlData.setY(cursor.getFloat(cursor.getColumnIndex("y")));
-                    sqlData.setZ(cursor.getFloat(cursor.getColumnIndex("z")));
-                    sqlData.setQ(cursor.getFloat(cursor.getColumnIndex("q")));
-                    sqlData.setW(cursor.getFloat(cursor.getColumnIndex("w")));
-                    sqlData.setE(cursor.getFloat(cursor.getColumnIndex("e")));
-                    sqlData.setTimeline(cursor.getLong(cursor.getColumnIndex("timeline")));
+                    sqlData.setX(cursor.getDouble(cursor.getColumnIndex("x")));
+                    sqlData.setY(cursor.getDouble(cursor.getColumnIndex("y")));
+                    sqlData.setZ(cursor.getDouble(cursor.getColumnIndex("z")));
+                    sqlData.setQ(cursor.getDouble(cursor.getColumnIndex("q")));
+                    sqlData.setW(cursor.getDouble(cursor.getColumnIndex("w")));
+                    sqlData.setE(cursor.getDouble(cursor.getColumnIndex("e")));
                     dataList.add(sqlData);
                 }
                 cursor.close();

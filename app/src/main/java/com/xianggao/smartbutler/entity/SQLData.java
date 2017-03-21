@@ -10,67 +10,58 @@ package com.xianggao.smartbutler.entity;
  */
 
 public class SQLData {
-    private float x;
-    private float y;
-    private float z;
-    private float q;
-    private float w;
-    private float e;
-    private long timeline;
+    private double x;
+    private double y;
+    private double z;
+    private double q;
+    private double w;
+    private double e;
 
-    public float getX() {
+    public double getX() {
         return x;
     }
 
-    public void setX(float x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public float getY() {
+    public double getY() {
         return y;
     }
 
-    public void setY(float y) {
+    public void setY(double y) {
         this.y = y;
     }
 
-    public float getZ() {
+    public double getZ() {
         return z;
     }
 
-    public void setZ(float z) {
+    public void setZ(double z) {
         this.z = z;
     }
 
-    public float getQ() {
+    public double getQ() {
         return q;
     }
 
-    public void setQ(float q) {
+    public void setQ(double q) {
         this.q = q;
     }
 
-    public float getW() {
+    public double getW() {
         return w;
     }
 
-    public void setW(float w) {
+    public void setW(double w) {
         this.w = w;
     }
 
-    public float getE() {
+    public double getE() {
         return e;
     }
 
-    public void setE(float e) {
+    public void setE(double e) {
         this.e = e;
-    }
-
-    public long getTimeline() {
-        return timeline;
-    }
-
-    public void setTimeline(long timeline) {
-        this.timeline = timeline;
     }
 }

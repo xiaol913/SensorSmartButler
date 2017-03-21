@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private void initView() {
         mWakeHelper = new WakeHelper(this, WakeHelper.Type.KEEP_CPU_RUN);
         mWakeHelper.acquire();
-        screenListener = new ScreenListener(this);
-        screenListener.start(this);
+//        screenListener = new ScreenListener(this);
+//        screenListener.start(this);
         accelerometer = new SensorHelper(this, Sensor.TYPE_ACCELEROMETER);
         gravity = new SensorHelper(this, Sensor.TYPE_GRAVITY);
         main_txtAccelerometerX = (TextView) findViewById(R.id.main_txtAccelerometerX);
