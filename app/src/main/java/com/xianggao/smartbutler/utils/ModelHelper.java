@@ -48,22 +48,6 @@ public class ModelHelper {
         return data;
     }
 
-    private static Map<String, Double> linearData(Map<String, Double> data, double[] list, String type) {
-        double a = Math.abs(list[0] - list[3]);
-        double b = Math.abs(list[1] - list[4]);
-        double c = Math.abs(list[2] - list[5]);
-        double v = Math.pow(a, 2) + Math.pow(b, 2) + Math.pow(c, 2);
-        String strX = type + "X";
-        String strY = type + "Y";
-        String strZ = type + "Z";
-        String strV = type + "_value";
-        data.put(strX, a);
-        data.put(strY, b);
-        data.put(strZ, c);
-        data.put(strV, v);
-        return data;
-    }
-
     public ModelHelper(Context context){
         AssetManager assetManager = context.getAssets();
         InputStream is = null;
@@ -80,7 +64,7 @@ public class ModelHelper {
         Map<String, Double> data = new HashMap<>();
         analysisData(data, list[0], list[1], list[2], "Accelerometer");
         analysisData(data, list[3], list[4], list[5], "Gravity");
-        linearData(data, list, "Linear");
+        analysisData(data, list[6], list[7], list[8], "Linear");
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
         List<InputField> inputFields = this.evaluator.getInputFields();
         for (InputField inputField : inputFields) {

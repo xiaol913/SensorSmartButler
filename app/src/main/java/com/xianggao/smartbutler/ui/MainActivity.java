@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private WakeHelper mWakeHelper;
     private ExecutorService executorService;
     private ModelHelper modelHelper;
+    private double[] newValues = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    private double[] allValues = new double[9];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,52 +104,46 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     @Override
     public void onSensorChanged(Sensor sensor, float[] values) {
         int sensorType = sensor.getType();
-        showDataInView(sensorType, values);
-        double[] newValues = new double[6];
-        long maxTimeMillis = 2000L;
-        if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-            return;//after 2000ms
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            newValues[0] = values[0];
+            newValues[1] = values[1];
+            newValues[2] = values[2];
         }
-        if (TextUtils.isEmpty(main_txtAccelerometerX.getText().toString()))
-            newValues[0] = 0;
-        else
-            newValues[0] = Float.parseFloat(main_txtAccelerometerX.getText().toString());
-        if (TextUtils.isEmpty(main_txtAccelerometerY.getText().toString()))
-            newValues[1] = 0;
-        else
-            newValues[1] = Float.parseFloat(main_txtAccelerometerY.getText().toString());
-        if (TextUtils.isEmpty(main_txtAccelerometerZ.getText().toString()))
-            newValues[2] = 0;
-        else
-            newValues[2] = Float.parseFloat(main_txtAccelerometerZ.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityX.getText().toString()))
-            newValues[3] = 0;
-        else
-            newValues[3] = Float.parseFloat(main_txtGravityX.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityY.getText().toString()))
-            newValues[4] = 0;
-        else
-            newValues[4] = Float.parseFloat(main_txtGravityY.getText().toString());
-        if (TextUtils.isEmpty(main_txtGravityZ.getText().toString()))
-            newValues[5] = 0;
-        else
-            newValues[5] = Float.parseFloat(main_txtGravityZ.getText().toString());
-        showAction(newValues);
+        if (sensorType == Sensor.TYPE_GRAVITY) {
+            newValues[3] = values[0];
+            newValues[4] = values[1];
+            newValues[5] = values[2];
+        }
+        long maxTimeMillis = 1000L;
+        if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
+            return;//after 1000ms
+        }
+        showDataInView(newValues);
     }
 
-    private void showDataInView(int sensorType, float[] values) {
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-            main_txtAccelerometerX.setText("" + x);
-            main_txtAccelerometerY.setText("" + y);
-            main_txtAccelerometerZ.setText("" + z);
-        } else if (sensorType == Sensor.TYPE_GRAVITY) {
-            main_txtGravityX.setText("" + x);
-            main_txtGravityY.setText("" + y);
-            main_txtGravityZ.setText("" + z);
-        }
+    private void showDataInView(double[] values) {
+        double a = values[0] - values[3];
+        double b = values[1] - values[4];
+        double c = values[2] - values[5];
+        main_txtAccelerometerX.setText("" + values[0]);
+        main_txtAccelerometerY.setText("" + values[1]);
+        main_txtAccelerometerZ.setText("" + values[2]);
+        main_txtGravityX.setText("" + values[3]);
+        main_txtGravityY.setText("" + values[4]);
+        main_txtGravityZ.setText("" + values[5]);
+        main_txtLinearX.setText("" + a);
+        main_txtLinearY.setText("" + b);
+        main_txtLinearZ.setText("" + c);
+        allValues[0] = values[0];
+        allValues[1] = values[1];
+        allValues[2] = values[2];
+        allValues[3] = values[3];
+        allValues[4] = values[4];
+        allValues[5] = values[5];
+        allValues[6] = a;
+        allValues[7] = b;
+        allValues[8] = c;
+        showAction(allValues);
     }
 
     private void showAction(double[] values) {
@@ -169,12 +164,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
                 break;
         }
         main_txtAction.setText("" + action);
-        double a = values[0] - values[3];
-        double b = values[1] - values[4];
-        double c = values[2] - values[5];
-        main_txtLinearX.setText("" + a);
-        main_txtLinearY.setText("" + b);
-        main_txtLinearZ.setText("" + c);
 //        Thread thread = new Thread() {
 //            //通过线程池及时间频繁度来减少OOM的发生
 //            @Override
