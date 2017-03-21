@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private SensorHelper gravity;
     private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ, main_txtAction;
     private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
+    private TextView main_txtLinearX, main_txtLinearY, main_txtLinearZ;
     private WakeHelper mWakeHelper;
     private ExecutorService executorService;
     private ModelHelper modelHelper;
@@ -51,10 +52,13 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         main_txtAccelerometerX = (TextView) findViewById(R.id.main_txtAccelerometerX);
         main_txtAccelerometerY = (TextView) findViewById(R.id.main_txtAccelerometerY);
         main_txtAccelerometerZ = (TextView) findViewById(R.id.main_txtAccelerometerZ);
-        main_txtAction = (TextView) findViewById(R.id.main_txtAction);
         main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
         main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
         main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
+        main_txtLinearX = (TextView) findViewById(R.id.main_txtLinearX);
+        main_txtLinearY = (TextView) findViewById(R.id.main_txtLinearY);
+        main_txtLinearZ = (TextView) findViewById(R.id.main_txtLinearZ);
+        main_txtAction = (TextView) findViewById(R.id.main_txtAction);
         executorService = Executors.newCachedThreadPool();
         modelHelper = new ModelHelper(this);
     }
@@ -165,6 +169,12 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
                 break;
         }
         main_txtAction.setText("" + action);
+        double a = values[0] - values[3];
+        double b = values[1] - values[4];
+        double c = values[2] - values[5];
+        main_txtLinearX.setText("" + a);
+        main_txtLinearY.setText("" + b);
+        main_txtLinearZ.setText("" + c);
 //        Thread thread = new Thread() {
 //            //通过线程池及时间频繁度来减少OOM的发生
 //            @Override
