@@ -3,6 +3,8 @@ package com.xianggao.smartbutler.utils;
 import android.content.Context;
 import android.content.res.AssetManager;
 
+import com.xianggao.smartbutler.entity.CountData;
+
 import org.dmg.pmml.FieldName;
 import org.jpmml.android.EvaluatorUtil;
 import org.jpmml.evaluator.Computable;
@@ -32,27 +34,55 @@ public class ModelHelper {
 
     private Evaluator evaluator;
 
-    private static Map<String, Double> analysisData(Map<String, Double> data, double x, double y, double z, String type) {
-        double a = Math.abs(x);
-        double b = Math.abs(y);
-        double c = Math.abs(z);
-        double v = Math.pow(a, 2) + Math.pow(b, 2) + Math.pow(c, 2);
+    private static Map<String, Double> analysisData(Map<String, Double> data, double[] list, String type) {
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        if (type.equals("Accelerometer")){
+            x = list[0];
+            y = list[1];
+            z = list[2];
+        }else if (type.equals("Gravity")){
+            x = list[3];
+            y = list[4];
+            z = list[5];
+        }else if (type.equals("Linear")){
+            x = list[6];
+            y = list[7];
+            z = list[8];
+        }
         String strX = type + "X";
         String strY = type + "Y";
         String strZ = type + "Z";
-        String strV = type + "_value";
-        data.put(strX, a);
-        data.put(strY, b);
-        data.put(strZ, c);
-        data.put(strV, v);
+        data.put(strX, x);
+        data.put(strY, y);
+        data.put(strZ, z);
         return data;
+    }
+
+    private static double[] normalize(double[] values){
+        double[] mean = {
+                0.172987568246,-0.59553202046,4.46550770779,
+                -0.149157725964,-0.62031950318,4.43278505239,
+                0.32214529421,0.0247874827203,0.0327226553929
+        };
+        double[] std = {
+                2.465133,3.433202,7.775168,
+                2.830752,3.278206,7.572936,
+                1.884442,1.235964,1.079798
+        };
+        double[] result = new double[9];
+        for (int i = 0; i < values.length; i++) {
+            result[i] = (values[i] - mean[i])/std[i];
+        }
+        return result;
     }
 
     public ModelHelper(Context context){
         AssetManager assetManager = context.getAssets();
         InputStream is = null;
         try {
-            is = assetManager.open("MLPClassifier.ser");
+            is = assetManager.open("MLPClassifier_new.ser");
             this.evaluator = EvaluatorUtil.createEvaluator(is);
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,16 +90,18 @@ public class ModelHelper {
             e.printStackTrace();
         }
     }
-    public String predictAction(double[] list){
+
+    public String predictAction(double[] array, CountData countData){
+        double[] list = normalize(array);
         Map<String, Double> data = new HashMap<>();
-        analysisData(data, list[0], list[1], list[2], "Accelerometer");
-        analysisData(data, list[3], list[4], list[5], "Gravity");
-        analysisData(data, list[6], list[7], list[8], "Linear");
+        analysisData(data, list, "Accelerometer");
+        analysisData(data, list, "Gravity");
+        analysisData(data, list, "Linear");
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
         List<InputField> inputFields = this.evaluator.getInputFields();
         for (InputField inputField : inputFields) {
             FieldName inputFieldName = inputField.getName();
-            FieldValue inputFieldValue;
+            FieldValue inputFieldValue = null;
             Object str = null;
             if (inputFieldName.toString().equals("AccelerometerX")) {
                 str = data.get("AccelerometerX");
@@ -77,26 +109,23 @@ public class ModelHelper {
                 str = data.get("AccelerometerY");
             } else if (inputFieldName.toString().equals("AccelerometerZ")) {
                 str = data.get("AccelerometerZ");
-            } else if (inputFieldName.toString().equals("Accelerometer_value")) {
-                str = data.get("Accelerometer_value");
             } else if (inputFieldName.toString().equals("GravityX")) {
                 str = data.get("GravityX");
             } else if (inputFieldName.toString().equals("GravityY")) {
                 str = data.get("GravityY");
             } else if (inputFieldName.toString().equals("GravityZ")) {
                 str = data.get("GravityZ");
-            } else if (inputFieldName.toString().equals("Gravity_value")) {
-                str = data.get("Gravity_value");
             } else if (inputFieldName.toString().equals("LinearX")) {
                 str = data.get("LinearX");
             } else if (inputFieldName.toString().equals("LinearY")) {
                 str = data.get("LinearY");
             } else if (inputFieldName.toString().equals("LinearZ")) {
                 str = data.get("LinearZ");
-            } else if (inputFieldName.toString().equals("Linear_value")) {
-                str = data.get("Linear_value");
             }
-            inputFieldValue = inputField.prepare(str);
+            try {
+                inputFieldValue = inputField.prepare(str);
+            }catch (Exception e){
+            }
             arguments.put(inputFieldName, inputFieldValue);
         }
         Map<FieldName, ?> results = evaluator.evaluate(arguments);
@@ -112,6 +141,28 @@ public class ModelHelper {
 
             unBoxedTargetFieldValue = computable.getResult();
         }
-        return unBoxedTargetFieldValue.toString();
+        switch (unBoxedTargetFieldValue.toString()) {
+            case "2":
+                countData.setCountV(countData.getCountV()+1);
+                break;
+            case "1":
+                countData.setCountS(countData.getCountS()+1);
+                break;
+            case "0":
+                countData.setCountF(countData.getCountF()+1);
+                break;
+        }
+        String resultCode = null;
+        if (countData.getCountF() >= countData.getCountS() &&
+                countData.getCountF() >= countData.getCountS()){
+            resultCode = "OnFeet";
+        } else if (countData.getCountS() >= countData.getCountF() &&
+                countData.getCountS() >= countData.getCountV()){
+            resultCode = "Still";
+        } else if  (countData.getCountV() >= countData.getCountF() &&
+                countData.getCountV() >= countData.getCountS()){
+            resultCode = "InVehicle";
+        }
+        return resultCode;
     }
 }

@@ -2,6 +2,7 @@ package com.xianggao.smartbutler.ui;
 
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,12 +11,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xianggao.smartbutler.R;
+import com.xianggao.smartbutler.entity.CountData;
 import com.xianggao.smartbutler.utils.ModelHelper;
 import com.xianggao.smartbutler.utils.RepeatHelper;
+import com.xianggao.smartbutler.utils.SQLHelper;
 import com.xianggao.smartbutler.utils.ScreenListener;
 import com.xianggao.smartbutler.utils.SensorHelper;
 import com.xianggao.smartbutler.utils.WakeHelper;
 
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private ExecutorService executorService;
     private ModelHelper modelHelper;
     private double[] newValues = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    private double[] allValues = new double[9];
+    private double[] allValues;
+    private CountData countData;
+    private TimerTask tt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +68,14 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         main_txtAction = (TextView) findViewById(R.id.main_txtAction);
         executorService = Executors.newCachedThreadPool();
         modelHelper = new ModelHelper(this);
+        allValues = new double[9];
+        countData = new CountData();
+        tt = new TimerTask() {
+            @Override
+            public void run() {
+
+            }
+        };
     }
 
     @Override
@@ -114,9 +128,9 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
             newValues[4] = values[1];
             newValues[5] = values[2];
         }
-        long maxTimeMillis = 1000L;
+        long maxTimeMillis = 50L;
         if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-            return;//after 1000ms
+            return;//after 50ms
         }
         showDataInView(newValues);
     }
@@ -125,15 +139,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         double a = values[0] - values[3];
         double b = values[1] - values[4];
         double c = values[2] - values[5];
-        main_txtAccelerometerX.setText("" + values[0]);
-        main_txtAccelerometerY.setText("" + values[1]);
-        main_txtAccelerometerZ.setText("" + values[2]);
-        main_txtGravityX.setText("" + values[3]);
-        main_txtGravityY.setText("" + values[4]);
-        main_txtGravityZ.setText("" + values[5]);
-        main_txtLinearX.setText("" + a);
-        main_txtLinearY.setText("" + b);
-        main_txtLinearZ.setText("" + c);
         allValues[0] = values[0];
         allValues[1] = values[1];
         allValues[2] = values[2];
@@ -143,34 +148,23 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         allValues[6] = a;
         allValues[7] = b;
         allValues[8] = c;
-        showAction(allValues);
+        main_txtAccelerometerX.setText("" + values[0]);
+        main_txtAccelerometerY.setText("" + values[1]);
+        main_txtAccelerometerZ.setText("" + values[2]);
+        main_txtGravityX.setText("" + values[3]);
+        main_txtGravityY.setText("" + values[4]);
+        main_txtGravityZ.setText("" + values[5]);
+        main_txtLinearX.setText("" + values[6]);
+        main_txtLinearY.setText("" + values[7]);
+        main_txtLinearZ.setText("" + values[8]);
     }
 
-    private void showAction(double[] values) {
-        String action = null;
-        action = modelHelper.predictAction(values);
-        switch (action) {
-            case "2":
-                action = "InVehicle";
-                break;
-            case "1":
-                action = "Still";
-                break;
-            case "0":
-                action = "OnFeet";
-                break;
-            default:
-                action = "Unknown";
-                break;
-        }
+    private void showAction(final double[] values) {
+        final String action = modelHelper.predictAction(values, countData);
+        countData.setCountF(0);
+        countData.setCountS(0);
+        countData.setCountV(0);
         main_txtAction.setText("" + action);
-//        Thread thread = new Thread() {
-//            //通过线程池及时间频繁度来减少OOM的发生
-//            @Override
-//            public void run() {
-//            }
-//        };
-//        executorService.submit(thread);
     }
 
     public void startCollectData(View v) {
