@@ -38,15 +38,15 @@ public class ModelHelper {
         double x = 0;
         double y = 0;
         double z = 0;
-        if (type.equals("Accelerometer")){
+        if (type.equals("Accelerometer")) {
             x = list[0];
             y = list[1];
             z = list[2];
-        }else if (type.equals("Gravity")){
+        } else if (type.equals("Gravity")) {
             x = list[3];
             y = list[4];
             z = list[5];
-        }else if (type.equals("Linear")){
+        } else if (type.equals("Linear")) {
             x = list[6];
             y = list[7];
             z = list[8];
@@ -60,25 +60,25 @@ public class ModelHelper {
         return data;
     }
 
-    private static double[] normalize(double[] values){
+    private static double[] normalize(double[] values) {
         double[] mean = {
-                0.172987568246,-0.59553202046,4.46550770779,
-                -0.149157725964,-0.62031950318,4.43278505239,
-                0.32214529421,0.0247874827203,0.0327226553929
+                0.172987568246, -0.59553202046, 4.46550770779,
+                -0.149157725964, -0.62031950318, 4.43278505239,
+                0.32214529421, 0.0247874827203, 0.0327226553929
         };
         double[] std = {
-                2.465133,3.433202,7.775168,
-                2.830752,3.278206,7.572936,
-                1.884442,1.235964,1.079798
+                2.465133, 3.433202, 7.775168,
+                2.830752, 3.278206, 7.572936,
+                1.884442, 1.235964, 1.079798
         };
         double[] result = new double[9];
         for (int i = 0; i < values.length; i++) {
-            result[i] = (values[i] - mean[i])/std[i];
+            result[i] = (values[i] - mean[i]) / std[i];
         }
         return result;
     }
 
-    public ModelHelper(Context context){
+    public ModelHelper(Context context) {
         AssetManager assetManager = context.getAssets();
         InputStream is = null;
         try {
@@ -91,7 +91,7 @@ public class ModelHelper {
         }
     }
 
-    public String predictAction(double[] array, CountData countData){
+    public String predictAction(double[] array, CountData countData) {
         double[] list = normalize(array);
         Map<String, Double> data = new HashMap<>();
         analysisData(data, list, "Accelerometer");
@@ -124,7 +124,7 @@ public class ModelHelper {
             }
             try {
                 inputFieldValue = inputField.prepare(str);
-            }catch (Exception e){
+            } catch (Exception e) {
             }
             arguments.put(inputFieldName, inputFieldValue);
         }
@@ -143,24 +143,24 @@ public class ModelHelper {
         }
         switch (unBoxedTargetFieldValue.toString()) {
             case "2":
-                countData.setCountV(countData.getCountV()+1);
+                countData.setCountV(countData.getCountV() + 1);
                 break;
             case "1":
-                countData.setCountS(countData.getCountS()+1);
+                countData.setCountS(countData.getCountS() + 1);
                 break;
             case "0":
-                countData.setCountF(countData.getCountF()+1);
+                countData.setCountF(countData.getCountF() + 1);
                 break;
         }
         String resultCode = null;
         if (countData.getCountF() >= countData.getCountS() &&
-                countData.getCountF() >= countData.getCountS()){
+                countData.getCountF() >= countData.getCountS()) {
             resultCode = "OnFeet";
         } else if (countData.getCountS() >= countData.getCountF() &&
-                countData.getCountS() >= countData.getCountV()){
+                countData.getCountS() >= countData.getCountV()) {
             resultCode = "Still";
-        } else if  (countData.getCountV() >= countData.getCountF() &&
-                countData.getCountV() >= countData.getCountS()){
+        } else if (countData.getCountV() >= countData.getCountF() &&
+                countData.getCountV() >= countData.getCountS()) {
             resultCode = "InVehicle";
         }
         return resultCode;

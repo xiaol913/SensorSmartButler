@@ -2,7 +2,6 @@ package com.xianggao.smartbutler.ui;
 
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import com.xianggao.smartbutler.R;
 import com.xianggao.smartbutler.entity.CountData;
 import com.xianggao.smartbutler.utils.ModelHelper;
 import com.xianggao.smartbutler.utils.RepeatHelper;
-import com.xianggao.smartbutler.utils.SQLHelper;
 import com.xianggao.smartbutler.utils.ScreenListener;
 import com.xianggao.smartbutler.utils.SensorHelper;
 import com.xianggao.smartbutler.utils.WakeHelper;
@@ -128,9 +126,9 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
             newValues[4] = values[1];
             newValues[5] = values[2];
         }
-        long maxTimeMillis = 50L;
+        long maxTimeMillis = 3000L;
         if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-            return;//after 50ms
+            return;//after 3000ms
         }
         showDataInView(newValues);
     }
@@ -148,6 +146,14 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         allValues[6] = a;
         allValues[7] = b;
         allValues[8] = c;
+        showAction(allValues);
+    }
+
+    private void showAction(final double[] values) {
+        final String action = modelHelper.predictAction(values, countData);
+        countData.setCountF(0);
+        countData.setCountS(0);
+        countData.setCountV(0);
         main_txtAccelerometerX.setText("" + values[0]);
         main_txtAccelerometerY.setText("" + values[1]);
         main_txtAccelerometerZ.setText("" + values[2]);
@@ -157,13 +163,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         main_txtLinearX.setText("" + values[6]);
         main_txtLinearY.setText("" + values[7]);
         main_txtLinearZ.setText("" + values[8]);
-    }
-
-    private void showAction(final double[] values) {
-        final String action = modelHelper.predictAction(values, countData);
-        countData.setCountF(0);
-        countData.setCountS(0);
-        countData.setCountV(0);
         main_txtAction.setText("" + action);
     }
 
