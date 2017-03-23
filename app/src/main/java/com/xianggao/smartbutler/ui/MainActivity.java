@@ -17,7 +17,6 @@ import com.xianggao.smartbutler.utils.ScreenListener;
 import com.xianggao.smartbutler.utils.SensorHelper;
 import com.xianggao.smartbutler.utils.WakeHelper;
 
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
