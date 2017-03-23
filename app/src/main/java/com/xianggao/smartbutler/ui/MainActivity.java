@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private double[] newValues = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     private double[] allValues;
     private CountData countData;
-    private TimerTask tt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +67,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         modelHelper = new ModelHelper(this);
         allValues = new double[9];
         countData = new CountData();
-        tt = new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        };
     }
 
     @Override
