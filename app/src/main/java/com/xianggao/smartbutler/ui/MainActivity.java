@@ -1,9 +1,16 @@
 package com.xianggao.smartbutler.ui;
 
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -26,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private ScreenListener screenListener;
     private SensorHelper accelerometer;
     private SensorHelper gravity;
-    private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ, main_txtAction;
+    private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ, main_txtAction, main_txtGPS;
     private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
     private TextView main_txtLinearX, main_txtLinearY, main_txtLinearZ;
     private WakeHelper mWakeHelper;
@@ -35,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private double[] newValues = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     private double[] allValues;
     private CountData countData;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +70,41 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         main_txtLinearY = (TextView) findViewById(R.id.main_txtLinearY);
         main_txtLinearZ = (TextView) findViewById(R.id.main_txtLinearZ);
         main_txtAction = (TextView) findViewById(R.id.main_txtAction);
+        main_txtGPS = (TextView) findViewById(R.id.main_txtGPS);
         executorService = Executors.newCachedThreadPool();
         modelHelper = new ModelHelper(this);
         allValues = new double[9];
         countData = new CountData();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        final Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        updateView(location);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 8, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                updateView(location);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                updateView(locationManager.getLastKnownLocation(provider));
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                updateView(null);
+            }
+        });
     }
 
     @Override
@@ -171,5 +210,21 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     public void RecordData(View view) {
         startActivity(new Intent(this, TestActivity.class));
         finish();
+    }
+
+    private void updateView(Location location) {
+        if (location != null) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("Longitude:");
+            sb.append(location.getLongitude());
+            sb.append("\nLatitude:");
+            sb.append(location.getLatitude());
+            sb.append("\nSpeed:");
+            sb.append(location.getSpeed());
+            main_txtGPS.setText(sb.toString());
+        } else {
+            // 如果传入的Location对象为空则清空EditText
+            main_txtGPS.setText("");
+        }
     }
 }
