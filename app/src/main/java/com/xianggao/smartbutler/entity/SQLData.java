@@ -13,7 +13,35 @@ public class SQLData {
     private double x;
     private double y;
     private double z;
+    private double a;
+    private double s;
+    private double d;
     private double q;
+
+    public double getA() {
+        return a;
+    }
+
+    public void setA(double a) {
+        this.a = a;
+    }
+
+    public double getS() {
+        return s;
+    }
+
+    public void setS(double s) {
+        this.s = s;
+    }
+
+    public double getD() {
+        return d;
+    }
+
+    public void setD(double d) {
+        this.d = d;
+    }
+
     private double w;
     private double e;
 

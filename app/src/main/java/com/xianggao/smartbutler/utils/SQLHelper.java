@@ -39,8 +39,19 @@ public class SQLHelper extends SQLiteOpenHelper {
                 + "q FLOAT NOT NULL,"
                 + "w FLOAT NOT NULL,"
                 + "e FLOAT NOT NULL)";
-
         sql.execSQL(create_sql);
+        String create_record = "CREATE TABLE IF NOT EXISTS sensor_record ("
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "x FLOAT NOT NULL,"
+                + "y FLOAT NOT NULL,"
+                + "z FLOAT NOT NULL,"
+                + "a FLOAT NOT NULL,"
+                + "s FLOAT NOT NULL,"
+                + "d FLOAT NOT NULL,"
+                + "q FLOAT NOT NULL,"
+                + "w FLOAT NOT NULL,"
+                + "e FLOAT NOT NULL)";
+        sql.execSQL(create_record);
     }
 
     @Override

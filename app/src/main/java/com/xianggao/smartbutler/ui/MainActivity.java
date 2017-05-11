@@ -5,6 +5,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,13 +19,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xianggao.smartbutler.R;
-import com.xianggao.smartbutler.entity.CountData;
+import com.xianggao.smartbutler.entity.SQLData;
 import com.xianggao.smartbutler.utils.ModelHelper;
 import com.xianggao.smartbutler.utils.RepeatHelper;
+import com.xianggao.smartbutler.utils.SQLHelper;
 import com.xianggao.smartbutler.utils.ScreenListener;
 import com.xianggao.smartbutler.utils.SensorHelper;
 import com.xianggao.smartbutler.utils.WakeHelper;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
     private ModelHelper modelHelper;
     private double[] newValues = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     private double[] allValues;
-    private CountData countData;
     private LocationManager locationManager;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         executorService = Executors.newCachedThreadPool();
         modelHelper = new ModelHelper(this);
         allValues = new double[9];
-        countData = new CountData();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -157,9 +160,9 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
             newValues[4] = values[1];
             newValues[5] = values[2];
         }
-        long maxTimeMillis = 3000L;
+        long maxTimeMillis = 50L;
         if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
-            return;//after 3000ms
+            return;//after 50ms
         }
         showDataInView(newValues);
     }
@@ -177,23 +180,58 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
         allValues[6] = a;
         allValues[7] = b;
         allValues[8] = c;
-        showAction(allValues);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                SQLHelper sqlHelper = SQLHelper.getInstance(getBaseContext());
+                SQLiteDatabase database = sqlHelper.getWritableDatabase();
+                database.execSQL("INSERT INTO sensor_record (x,y,z,a,s,d,q,w,e) VALUES (?,?,?,?,?,?,?,?,?)",
+                        new Object[]{allValues[0], allValues[1], allValues[2], allValues[3], allValues[4], allValues[5], allValues[6], allValues[7], allValues[8]});
+                count++;
+                if (count == 40) {
+                    SQLHelper helper = SQLHelper.getInstance(getBaseContext());
+                    SQLiteDatabase data_base = helper.getReadableDatabase();
+                    data_base.execSQL("DELETE FROM sensor_record");
+                    count = 0;
+                }
+            }
+        };
+        executorService.submit(thread);
+        long maxTimeMillis = 2000L;
+        if (RepeatHelper.isFastDoubleAction(maxTimeMillis)) {
+            return;//after 2000ms
+        }
+        showAction();
     }
 
-    private void showAction(final double[] values) {
-        final String action = modelHelper.predictAction(values, countData);
-        countData.setCountF(0);
-        countData.setCountS(0);
-        countData.setCountV(0);
-        main_txtAccelerometerX.setText("" + values[0]);
-        main_txtAccelerometerY.setText("" + values[1]);
-        main_txtAccelerometerZ.setText("" + values[2]);
-        main_txtGravityX.setText("" + values[3]);
-        main_txtGravityY.setText("" + values[4]);
-        main_txtGravityZ.setText("" + values[5]);
-        main_txtLinearX.setText("" + values[6]);
-        main_txtLinearY.setText("" + values[7]);
-        main_txtLinearZ.setText("" + values[8]);
+    private void showAction() {
+        SQLHelper helper = SQLHelper.getInstance(getBaseContext());
+        SQLiteDatabase database = helper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM sensor_record", null);
+        cursor.moveToFirst();
+        ArrayList<SQLData> dataList = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            SQLData sqlData = new SQLData();
+            sqlData.setX(cursor.getDouble(cursor.getColumnIndex("x")));
+            sqlData.setY(cursor.getDouble(cursor.getColumnIndex("y")));
+            sqlData.setZ(cursor.getDouble(cursor.getColumnIndex("z")));
+            sqlData.setA(cursor.getDouble(cursor.getColumnIndex("a")));
+            sqlData.setS(cursor.getDouble(cursor.getColumnIndex("s")));
+            sqlData.setD(cursor.getDouble(cursor.getColumnIndex("d")));
+            sqlData.setQ(cursor.getDouble(cursor.getColumnIndex("q")));
+            sqlData.setW(cursor.getDouble(cursor.getColumnIndex("w")));
+            sqlData.setE(cursor.getDouble(cursor.getColumnIndex("e")));
+            dataList.add(sqlData);
+        }
+        cursor.close();
+        String action = modelHelper.predictAction(dataList);
+        if (action.equals("0")) {
+            action = "OnFeet";
+        } else if (action.equals("1")) {
+            action = "Still";
+        } else if (action.equals("2")) {
+            action = "InVehicle";
+        }
         main_txtAction.setText("" + action);
     }
 

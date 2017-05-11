@@ -3,7 +3,7 @@ package com.xianggao.smartbutler.utils;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-import com.xianggao.smartbutler.entity.CountData;
+import com.xianggao.smartbutler.entity.SQLData;
 
 import org.dmg.pmml.FieldName;
 import org.jpmml.android.EvaluatorUtil;
@@ -15,6 +15,7 @@ import org.jpmml.evaluator.TargetField;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,48 +35,73 @@ public class ModelHelper {
 
     private Evaluator evaluator;
 
-    private static Map<String, Double> analysisData(Map<String, Double> data, double[] list, String type) {
-        double x = 0;
-        double y = 0;
-        double z = 0;
-        if (type.equals("Accelerometer")) {
-            x = list[0];
-            y = list[1];
-            z = list[2];
-        } else if (type.equals("Gravity")) {
-            x = list[3];
-            y = list[4];
-            z = list[5];
-        } else if (type.equals("Linear")) {
-            x = list[6];
-            y = list[7];
-            z = list[8];
-        }
-        String strX = type + "X";
-        String strY = type + "Y";
-        String strZ = type + "Z";
-        data.put(strX, x);
-        data.put(strY, y);
-        data.put(strZ, z);
+    private static Map<String, Double> analysisData(Map<String, Double> data, double[] list) {
+        data.put("AX_max", list[0]);
+        data.put("AX_min", list[1]);
+        data.put("AY_max", list[2]);
+        data.put("AY_min", list[3]);
+        data.put("AZ_max", list[4]);
+        data.put("AZ_min", list[5]);
+
+        data.put("GX_max", list[6]);
+        data.put("GX_min", list[7]);
+        data.put("GY_max", list[8]);
+        data.put("GY_min", list[9]);
+        data.put("GZ_max", list[10]);
+        data.put("GZ_min", list[11]);
+
+        data.put("LX_max", list[12]);
+        data.put("LX_min", list[13]);
+        data.put("LY_max", list[14]);
+        data.put("LY_min", list[15]);
+        data.put("LZ_max", list[16]);
+        data.put("LZ_min", list[17]);
         return data;
     }
 
-    private static double[] normalize(double[] values) {
-        double[] mean = {
-                0.172987568246, -0.59553202046, 4.46550770779,
-                -0.149157725964, -0.62031950318, 4.43278505239,
-                0.32214529421, 0.0247874827203, 0.0327226553929
-        };
-        double[] std = {
-                2.465133, 3.433202, 7.775168,
-                2.830752, 3.278206, 7.572936,
-                1.884442, 1.235964, 1.079798
-        };
-        double[] result = new double[9];
-        for (int i = 0; i < values.length; i++) {
-            result[i] = (values[i] - mean[i]) / std[i];
+    private static double[] normalize(double[][] values) {
+        double[] mean = new double[9];
+        double[] std = new double[9];
+        double[][] result = new double[values.length][9];
+        double[] res_data = new double[18];
+
+        for (int column = 0; column < 9; column++) {
+            double sum = 0;
+            for (int row = 0; row < values.length; row++) {
+                sum = sum + values[row][column];
+            }
+            mean[column] = sum / values.length;
+            double sum_1 = 0;
+            for (int row_1 = 0; row_1 < values.length; row_1++) {
+                sum_1 = sum_1 + (values[row_1][column] - mean[column]) * (values[row_1][column] - mean[column]);
+            }
+            std[column] = Math.sqrt((sum_1 / values.length));
         }
-        return result;
+
+        for (int i = 0; i < values.length; i++) {
+            for (int j = 0; j < 9; j++) {
+                result[i][j] = (values[i][j] - mean[j]) / std[j];
+            }
+        }
+
+        int index = 0;
+        for (int i = 0; i < 9; i++) {
+            double max = result[i][0];
+            double min = result[i][0];
+            for (int j = 0; j < values.length; j++) {
+                if (values[j][i] > max) {
+                    max = values[j][i];
+                }
+                if (values[j][i] < min) {
+                    min = values[j][i];
+                }
+            }
+            res_data[index] = max;
+            index++;
+            res_data[index] = min;
+            index++;
+        }
+        return res_data;
     }
 
     public ModelHelper(Context context) {
@@ -91,36 +117,53 @@ public class ModelHelper {
         }
     }
 
-    public String predictAction(double[] array, CountData countData) {
-        double[] list = normalize(array);
+    public String predictAction(ArrayList<SQLData> dataList) {
+        double[][] data_list = recordData(dataList);
+        double[] list = normalize(data_list);
         Map<String, Double> data = new HashMap<>();
-        analysisData(data, list, "Accelerometer");
-        analysisData(data, list, "Gravity");
-        analysisData(data, list, "Linear");
+        analysisData(data, list);
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
         List<InputField> inputFields = this.evaluator.getInputFields();
         for (InputField inputField : inputFields) {
             FieldName inputFieldName = inputField.getName();
             FieldValue inputFieldValue = null;
             Object str = null;
-            if (inputFieldName.toString().equals("AccelerometerX")) {
-                str = data.get("AccelerometerX");
-            } else if (inputFieldName.toString().equals("AccelerometerY")) {
-                str = data.get("AccelerometerY");
-            } else if (inputFieldName.toString().equals("AccelerometerZ")) {
-                str = data.get("AccelerometerZ");
-            } else if (inputFieldName.toString().equals("GravityX")) {
-                str = data.get("GravityX");
-            } else if (inputFieldName.toString().equals("GravityY")) {
-                str = data.get("GravityY");
-            } else if (inputFieldName.toString().equals("GravityZ")) {
-                str = data.get("GravityZ");
-            } else if (inputFieldName.toString().equals("LinearX")) {
-                str = data.get("LinearX");
-            } else if (inputFieldName.toString().equals("LinearY")) {
-                str = data.get("LinearY");
-            } else if (inputFieldName.toString().equals("LinearZ")) {
-                str = data.get("LinearZ");
+            if (inputFieldName.toString().equals("AX_max")) {
+                str = data.get("AX_max");
+            } else if (inputFieldName.toString().equals("AX_min")) {
+                str = data.get("AX_min");
+            } else if (inputFieldName.toString().equals("AY_max")) {
+                str = data.get("AY_max");
+            } else if (inputFieldName.toString().equals("AY_min")) {
+                str = data.get("AY_min");
+            } else if (inputFieldName.toString().equals("AZ_max")) {
+                str = data.get("AZ_max");
+            } else if (inputFieldName.toString().equals("AZ_min")) {
+                str = data.get("AZ_min");
+            } else if (inputFieldName.toString().equals("GX_max")) {
+                str = data.get("GX_max");
+            } else if (inputFieldName.toString().equals("GX_min")) {
+                str = data.get("GX_min");
+            } else if (inputFieldName.toString().equals("GY_max")) {
+                str = data.get("GY_max");
+            } else if (inputFieldName.toString().equals("GY_min")) {
+                str = data.get("GY_min");
+            } else if (inputFieldName.toString().equals("GZ_max")) {
+                str = data.get("GZ_max");
+            } else if (inputFieldName.toString().equals("GZ_min")) {
+                str = data.get("GZ_min");
+            } else if (inputFieldName.toString().equals("LX_max")) {
+                str = data.get("LX_max");
+            } else if (inputFieldName.toString().equals("LX_min")) {
+                str = data.get("LX_min");
+            } else if (inputFieldName.toString().equals("LY_max")) {
+                str = data.get("LY_max");
+            } else if (inputFieldName.toString().equals("LY_min")) {
+                str = data.get("LY_min");
+            } else if (inputFieldName.toString().equals("LZ_max")) {
+                str = data.get("LZ_max");
+            } else if (inputFieldName.toString().equals("LZ_min")) {
+                str = data.get("LZ_min");
             }
             try {
                 inputFieldValue = inputField.prepare(str);
@@ -141,28 +184,22 @@ public class ModelHelper {
 
             unBoxedTargetFieldValue = computable.getResult();
         }
-        switch (unBoxedTargetFieldValue.toString()) {
-            case "2":
-                countData.setCountV(countData.getCountV() + 1);
-                break;
-            case "1":
-                countData.setCountS(countData.getCountS() + 1);
-                break;
-            case "0":
-                countData.setCountF(countData.getCountF() + 1);
-                break;
+        return unBoxedTargetFieldValue.toString();
+    }
+
+    private double[][] recordData(ArrayList<SQLData> dataList) {
+        double[][] result = new double[dataList.size()][9];
+        for (int i = 0; i < dataList.size(); i++) {
+            result[i][0] = dataList.get(i).getX();
+            result[i][1] = dataList.get(i).getY();
+            result[i][2] = dataList.get(i).getZ();
+            result[i][3] = dataList.get(i).getA();
+            result[i][4] = dataList.get(i).getS();
+            result[i][5] = dataList.get(i).getD();
+            result[i][6] = dataList.get(i).getQ();
+            result[i][7] = dataList.get(i).getW();
+            result[i][8] = dataList.get(i).getE();
         }
-        String resultCode = null;
-        if (countData.getCountF() >= countData.getCountS() &&
-                countData.getCountF() >= countData.getCountS()) {
-            resultCode = "OnFeet";
-        } else if (countData.getCountS() >= countData.getCountF() &&
-                countData.getCountS() >= countData.getCountV()) {
-            resultCode = "Still";
-        } else if (countData.getCountV() >= countData.getCountF() &&
-                countData.getCountV() >= countData.getCountS()) {
-            resultCode = "InVehicle";
-        }
-        return resultCode;
+        return result;
     }
 }
