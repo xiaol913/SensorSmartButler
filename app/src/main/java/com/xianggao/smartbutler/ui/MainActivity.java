@@ -34,12 +34,9 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements ScreenListener.ScreenStateListener, SensorHelper.onSensorChangeListener {
 
-    private ScreenListener screenListener;
     private SensorHelper accelerometer;
     private SensorHelper gravity;
-    private TextView main_txtAccelerometerX, main_txtAccelerometerY, main_txtAccelerometerZ, main_txtAction, main_txtGPS;
-    private TextView main_txtGravityX, main_txtGravityY, main_txtGravityZ;
-    private TextView main_txtLinearX, main_txtLinearY, main_txtLinearZ;
+    private TextView main_txtAction, main_txtGPS;
     private WakeHelper mWakeHelper;
     private ExecutorService executorService;
     private ModelHelper modelHelper;
@@ -64,15 +61,6 @@ public class MainActivity extends AppCompatActivity implements ScreenListener.Sc
 //        screenListener.start(this);
         accelerometer = new SensorHelper(this, Sensor.TYPE_ACCELEROMETER);
         gravity = new SensorHelper(this, Sensor.TYPE_GRAVITY);
-        main_txtAccelerometerX = (TextView) findViewById(R.id.main_txtAccelerometerX);
-        main_txtAccelerometerY = (TextView) findViewById(R.id.main_txtAccelerometerY);
-        main_txtAccelerometerZ = (TextView) findViewById(R.id.main_txtAccelerometerZ);
-        main_txtGravityX = (TextView) findViewById(R.id.main_txtGravityX);
-        main_txtGravityY = (TextView) findViewById(R.id.main_txtGravityY);
-        main_txtGravityZ = (TextView) findViewById(R.id.main_txtGravityZ);
-        main_txtLinearX = (TextView) findViewById(R.id.main_txtLinearX);
-        main_txtLinearY = (TextView) findViewById(R.id.main_txtLinearY);
-        main_txtLinearZ = (TextView) findViewById(R.id.main_txtLinearZ);
         main_txtAction = (TextView) findViewById(R.id.main_txtAction);
         main_txtGPS = (TextView) findViewById(R.id.main_txtGPS);
         executorService = Executors.newCachedThreadPool();
